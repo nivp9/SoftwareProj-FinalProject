@@ -1,16 +1,13 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include "spkmeans.h"
 #define assertAndReturn(cond)                   \
         if (!(cond)) {                          \
             printf("An Error Has Occurred");    \
             exit(1);                           \
         }                                       \
-double ** multMatrix(double **A, double ** B, int An, int Am, int Bn, int Bm);
-double euclideanDist(double* a, double* b, int n);
-double W(double** A,int i, int j, int n);
-double** Transpose(double**A, int n, int m);
-void freeMatrix(double** A, int n, int m );
+
 
 
 int main(int argc, char *argv[] )
@@ -83,4 +80,14 @@ void freeMatrix(double** A, int n, int m ){
         free(A[i]);
     }
     free(A);
+}
+double ** createMatrix(int n, int m) {
+    double **res;
+    int i, j;
+    res = (double **) (calloc(n, sizeof(double *)));
+    assertAndReturn(res != nullptr);
+    for (i = 0; i < m; i++) {
+        res[i] = (double *) calloc(m, sizeof(double));
+    }
+    return res;
 }
