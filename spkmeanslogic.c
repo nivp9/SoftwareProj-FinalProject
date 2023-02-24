@@ -1,8 +1,6 @@
 #include "spkmeans.h"
-int main(int argc, char *argv[] )
-{
-    return 0;
-}
+#include "Utils.c"
+
 double** wam(double** A, int n){
     int i,j;
     double** res = createMatrix(n,n);

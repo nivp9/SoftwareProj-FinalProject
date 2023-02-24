@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "spkmeans.h"
+
 #define assertAndReturn(cond)                   \
         if (!(cond)) {                          \
             printf("An Error Has Occurred");    \
@@ -10,23 +11,18 @@
 
 
 
-int main(int argc, char *argv[] )
-{
-    return 0;
-}
-
 double ** multMatrix(double **A, double ** B, int An, int Am, int Bn, int Bm){
     double **res;
     int i, j, k;
     double cellVal;
     if(Am!= Bn){
-        return nullptr;
+        return NULL;
     }
     res = (double **)(calloc(An, sizeof(double*)));
-    assertAndReturn(res !=nullptr);
+    assertAndReturn(res !=NULL);
     for(i=0;i<An;i++){
         res[i]=(double *) calloc(Bm,sizeof (double));
-        assertAndReturn(res[i] !=nullptr);
+        assertAndReturn(res[i] !=NULL);
         for(j=0;j<Bm;j++){
             cellVal=0;
             for(k=0;k<Am;k++){
@@ -63,10 +59,10 @@ double** Transpose(double**A, int n, int m){
     double **res;
     int i, j;
     res = (double **)(calloc(m, sizeof(double*)));
-    assertAndReturn(res !=nullptr);
+    assertAndReturn(res !=NULL);
     for(i=0;i<m;i++){
         res[i]=(double *) calloc(n,sizeof (double));
-        assertAndReturn(res[i] !=nullptr);
+        assertAndReturn(res[i] !=NULL);
         for(j=0;j<n;j++){
             res[i][j]= A[j][i];
         }
@@ -85,7 +81,7 @@ double ** createMatrix(int n, int m) {
     double **res;
     int i, j;
     res = (double **) (calloc(n, sizeof(double *)));
-    assertAndReturn(res != nullptr);
+    assertAndReturn(res != NULL);
     for (i = 0; i < m; i++) {
         res[i] = (double *) calloc(m, sizeof(double));
     }
