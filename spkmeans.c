@@ -31,7 +31,6 @@ struct vector
 double** convertLinkedListToArray(struct vector *v, int vectors, int cords);
 void freeLinkedList(struct vector *vec);
 void freeCordsList(struct cord *cord);
-
 char *goal, *file;
 int rowsCount=0;
 int columnCount=0;
@@ -43,17 +42,39 @@ int main(int argc, char *argv[] )
     //     printf("An Error Has Occurred");
     //     return 0;
     // }
-    goal ="wam";// argv[1];
+    goal ="gl";// argv[1];
     file = "tests/tests/input_1.txt";//argv[2];
     prepData(file);
+
+    
     if(strcmp(goal, "wam")==0){
-        if(rowsCount!= columnCount){
-            printf("An Error Has Occurred");
-            return 0;
-        }
-        double **wamRes = wam(data,rowsCount);
-        printMatrix(wamRes, columnCount, columnCount);
+        double **wamRes = wam(data,rowsCount,columnCount);
+        printMatrix(wamRes, rowsCount, rowsCount);
+        freeMatrix(wamRes,rowsCount);
     }
+    else if(strcmp(goal,"ddg")==0){ 
+        double **wamRes = wam(data,rowsCount,columnCount);
+        double **ddgRes = ddg(wamRes,rowsCount);
+        printMatrix(ddgRes, rowsCount, rowsCount);
+        freeMatrix(wamRes,rowsCount);
+        freeMatrix(ddgRes,rowsCount);
+
+
+    }
+    else if(strcmp(goal,"gl")==0){
+        double **wamRes = wam(data,rowsCount,columnCount);
+        double **ddgRes = ddg(wamRes,rowsCount);
+        double **glRes = gl(wamRes,ddgRes,rowsCount);
+        printMatrix(glRes, rowsCount, rowsCount);
+        freeMatrix(wamRes,rowsCount);
+        freeMatrix(ddgRes,rowsCount);
+        freeMatrix(glRes,rowsCount);
+    }
+    else {
+        printf("An Error Has Occurred");
+        return 0;
+    }
+    return 1;
 }
 
 
@@ -161,18 +182,5 @@ void freeLinkedList(struct vector *vec){
         freeCordsList (vec->cords); 
 
         free(vec);
-    }
-}
-
-
-
-void printMatrix(double ** d, int n, int m ){
-    int i,j;
-    for(i=0;i<n;i++){
-        for(j=0;j<m;j++){
-            
-            printf("%0.4f  ,",d[i][j]);
-        }
-        printf("\n");
     }
 }

@@ -87,3 +87,22 @@ double ** createMatrix(int n, int m) {
     }
     return res;
 }
+
+
+void freeMatrix(double**A, int n) {
+    for (i = 0; i < n; i++) {
+        free(res[i]);
+    }
+    free(res);
+}
+
+void printMatrix(double ** d, int n, int m ){
+    int i,j;
+    for(i=0;i<n;i++){
+        for(j=0;j<m;j++){
+            
+            printf("%0.4f  ,",d[i][j]);
+        }
+        printf("\n");
+    }
+}
