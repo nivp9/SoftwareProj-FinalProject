@@ -42,7 +42,7 @@ int main(int argc, char *argv[] )
     //     printf("An Error Has Occurred");
     //     return 0;
     // }
-    goal ="gl";// argv[1];
+    goal ="wam";// argv[1];
     file = "tests/tests/input_1.txt";//argv[2];
     prepData(file);
 
@@ -168,6 +168,10 @@ double** convertLinkedListToArray(struct vector *v, int vectors, int cords){
     }
     return res;
 }
+
+
+
+
 void freeCordsList(struct cord *cord){
     if(cord != NULL){
         freeCordsList(cord->next);
