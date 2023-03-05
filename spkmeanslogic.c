@@ -1,6 +1,7 @@
 #include "spkmeans.h"
 #include "Utils.c"
 
+
 double** wam(double** A, int n, int k){
     int i,j;
     double** res = createMatrix(n,n);
