@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 #include "spkmeans.h"
 #include "spkmeanslogic.c"
- 
+
 
 
 #define EPSILON 0.001
@@ -42,12 +43,14 @@ int main(int argc, char *argv[] )
     //     printf("An Error Has Occurred");
     //     return 0;
     // }
+
     goal ="gl";// argv[1];
-    file = "tests/tests/input_1.txt";//argv[2];
+    //file = "tests/tests/input_1.txt";//argv[2];
+    file = "C:/Users/Erezd/OneDrive/Desktop/input_1.txt"; //argv[2]
     prepData(file);
 
     
-    if(strcmp(goal, "wam")==0){
+    if(strcmp(goal,"wam")==0){
         double **wamRes = wam(data,rowsCount,columnCount);
         printMatrix(wamRes, rowsCount, rowsCount);
         freeMatrix(wamRes,rowsCount);
@@ -58,8 +61,6 @@ int main(int argc, char *argv[] )
         printMatrix(ddgRes, rowsCount, rowsCount);
         freeMatrix(wamRes,rowsCount);
         freeMatrix(ddgRes,rowsCount);
-
-
     }
     else if(strcmp(goal,"gl")==0){
         double **wamRes = wam(data,rowsCount,columnCount);
