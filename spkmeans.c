@@ -39,14 +39,12 @@ double **data =NULL;
 
 int main(int argc, char *argv[] )
 {
-    // if(argc !=3){
-    //     printf("An Error Has Occurred");
-    //     return 0;
-    // }
-
-    goal ="gl";// argv[1];
-    //file = "tests/tests/input_1.txt";//argv[2];
-    file = "C:/Users/Erezd/OneDrive/Desktop/input_1.txt"; //argv[2]
+    if(argc !=3){
+        printf("An Error Has Occurred");
+        return 0;
+    }
+    goal = argv[1];
+    file = argv[2];
     prepData(file);
 
     
@@ -70,6 +68,23 @@ int main(int argc, char *argv[] )
         freeMatrix(wamRes,rowsCount);
         freeMatrix(ddgRes,rowsCount);
         freeMatrix(glRes,rowsCount);
+    } 
+    else if(strcmp(goal,"jacobi")==0){
+        double **wamRes = wam(data,rowsCount,columnCount);
+        double **ddgRes = ddg(wamRes,rowsCount);
+        double **glRes = gl(wamRes,ddgRes,rowsCount);
+        double***jacobiRes = jacobi(glRes, rowsCount);
+        printDiag(jacobiRes[1], rowsCount);
+        printMatrix(jacobiRes[0], rowsCount, rowsCount);
+
+
+        freeMatrix(wamRes,rowsCount);
+        freeMatrix(ddgRes,rowsCount);
+        freeMatrix(glRes,rowsCount);
+        freeMatrix(jacobiRes[1],rowsCount);
+        freeMatrix(jacobiRes[0],rowsCount);
+        free(jacobiRes);
+
     }
     else {
         printf("An Error Has Occurred");
@@ -79,17 +94,8 @@ int main(int argc, char *argv[] )
 }
 
 
-
-
-
-
-
-
-
-
 void prepData(char *filename){
-    FILE *f = fopen(filename, "r");
-    assertAndReturn(f!=NULL);
+
     double n;
     char c;
     int columnsCountInitialized=0;
@@ -97,7 +103,9 @@ void prepData(char *filename){
     struct vector *head_vec, *curr_vec,*prev_vec;
     struct cord *head_cord, *curr_cord;
 
-
+    FILE *f = fopen(filename, "r");
+    assertAndReturn(f!=NULL);
+    
     head_cord = malloc(sizeof(struct cord));
     curr_cord = head_cord;
     curr_cord->next = NULL;
@@ -161,7 +169,6 @@ double** convertLinkedListToArray(struct vector *v, int vectors, int cords){
             if(j<cords){
                 currCord=currCord->next;
             }
-
         }
         if(i<vectors){
             v=v->next;
