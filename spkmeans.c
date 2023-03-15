@@ -70,10 +70,8 @@ int main(int argc, char *argv[] )
         freeMatrix(glRes,rowsCount);
     } 
     else if(strcmp(goal,"jacobi")==0){
-        double **wamRes = wam(data,rowsCount,columnCount);
-        double **ddgRes = ddg(wamRes,rowsCount);
-        double **glRes = gl(wamRes,ddgRes,rowsCount);
-        double***jacobiRes = jacobi(glRes, rowsCount);
+        assertAndReturn(rowsCount!=columnCount);
+        double***jacobiRes = jacobi(data, rowsCount);
         printDiag(jacobiRes[1], rowsCount);
         printMatrix(jacobiRes[0], rowsCount, rowsCount);
 
