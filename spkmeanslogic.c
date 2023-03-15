@@ -36,3 +36,41 @@ double** gl(double **wamMat,double **ddgMat, int n){
     }
     return res;
 }
+
+
+double*** jacobi(double** A,int n){
+    double currDelta=1;
+    int iter=0;
+    double** V = createIMatrix(int n);
+    double ** Vtmp,Atemp;
+
+    while(iter<100 &&currDelta>0.00001){
+        double ** P,PT;
+        int maxI,maxJ;
+        double c,s;
+        int[2] biggestEl= offDiaglargestAbsVal(A,n);
+
+        offA = off(A, int n);
+
+        maxI=biggestEl[0];
+        maxJ=biggestEl[1];
+        free(biggestEl);
+        P=createPMat(A,maxI,maxJ,c,s,n);
+        PT=Transpose(A,n,n);
+        Atemp= multMatrix(PT,A,n,n,n,n);
+        freeMatrix(A,n);
+        A= multMatrix(Atemp,P,n,n,n,n);
+        freeMatrix(Atemp,n);
+
+        Vtmp =multMatrix(V,P,n,n,n,n);
+        freeMatrix(V,n);
+        V=Vtmp
+        offAt = off(A, int n);
+        currDelta =offAt-offA;
+        double offA,offAt;
+        iter++;
+
+    }
+    return new double** {A,V};
+}
+

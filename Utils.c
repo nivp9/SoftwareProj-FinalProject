@@ -104,23 +104,24 @@ double sumOfSquaresOffDiagonal (double**A, int n){
     return sum;
 }
 
-double* largestAbsVal (double**A, int n){
+double* offDiaglargestAbsVal (double**A, int n){
     int i, j;
     double maxVal = 0;
     double* res = {0,0,0};
 
     for(i = 0; i < n; i++){
         for(j = i+1; j < n; j++) {
-            if (abs(A[i][j]) > maxVal) {
-                maxVal = abs(A[i][j]);
+            if (abs(A[i][j]) > abs(maxVal) && i!=j) {
+                maxVal = A[i][j];
                 res[0] = i;
                 res[1] = j;
             }
         }
-    }()
+    }
     res[2] = maxVal;
     return res;
 }
+
 
 double* obtainCS (double**A, int i, int j, int n){
     double teta = (A[j][j] - A[i][i]) / (2 * A[i][j]);
@@ -133,6 +134,21 @@ double* obtainCS (double**A, int i, int j, int n){
     res[0] = c;
     res[1] = s;
     return res;
+}
+double obtainT (double**A, int i, int j, int n){
+    double teta = (A[j][j] - A[i][i]) / (2 * A[i][j]);
+    int signTeta = teta > 0 ? 1 : -1;
+    double t = signTeta / (abs(teta) + sqrt(pow(teta,2) + 1));
+    return t;
+}
+double obtainC (double**A, int i, int j, int n){
+    double t = obtainT(A,i,j,n);
+    return  1 / (sqrt(pow(t,2) + 1));
+}
+double obtainS (double**A, int i, int j, int n){
+    double t = obtainT(A,i,j,n);
+    double c = obtainC(A,i,j,n);
+    return t*c;
 }
 
 
@@ -149,16 +165,19 @@ int isDiagonal (double**A, int n, int m){
     return 1;
 }
 
-double ** createPMat (double**A, int i, int j, int c, int s, int n){
+double ** createPMat (double**A, int maxi, int maxj, int n){
     double **res = createMatrix(n,n);
     int k;
+    double c,s;
+    c = obtainC (A, maxi, maxj, n);
+    s = obtainS (A, maxi, maxj, n);
     for (k = 0; k < n; k++) {
         res[k][k] = 1;
     }
-    A[i][i] = c;
-    A[j][j] = c;
-    A[i][j] = s;
-    A[j][i] = -1 * s;
+    A[maxi][maxi] = c;
+    A[maxj][maxj] = c;
+    A[maxi][maxj] = s;
+    A[maxj][maxi] = -1 * s;
 
     return res;
 }
@@ -172,6 +191,15 @@ double ** createMatrix(int n, int m) {
     assertAndReturn(res != NULL);
     for (i = 0; i < m; i++) {
         res[i] = (double *) calloc(m, sizeof(double));
+    }
+    return res;
+}
+
+double ** createIMatrix(int n) {
+    double **res = createMatrix(n,n);
+    int i;
+    for (i = 0; i < n; i++) {
+        res[i][i] = 1;
     }
     return res;
 }
@@ -199,4 +227,16 @@ void printMatrix(double ** d, int n, int m ){
         }
         printf("\n");
     }
+}
+double off(double** A, int n){
+    int i,j;
+    double res=0;
+    for(i=0;i<n;i++){
+        for(j=0;j<n;j++){
+            if(i!=j){
+                res += pow(A[i][j],2);
+            }
+        }
+    }
+    return res;
 }
