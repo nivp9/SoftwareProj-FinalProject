@@ -75,10 +75,6 @@ int main(int argc, char *argv[] )
         printDiag(jacobiRes[1], rowsCount);
         printMatrix(jacobiRes[0], rowsCount, rowsCount);
 
-
-        freeMatrix(wamRes,rowsCount);
-        freeMatrix(ddgRes,rowsCount);
-        freeMatrix(glRes,rowsCount);
         freeMatrix(jacobiRes[1],rowsCount);
         freeMatrix(jacobiRes[0],rowsCount);
         free(jacobiRes);
