@@ -7,19 +7,28 @@ double** Transpose(double**A, int n, int m);
 
 double** calculateNewA (double**A, int n, int i, int j, int c, int s);
 double sumOfSquaresOffDiagonal (double**A, int n);
-int isDiagonal (double**A, int n, int m);
-double ** createPMat (double**A, int i, int j, int c, int s, int n);
-double* largestAbsVal (double**A, int n);
+int isDiagonal (double**A, int n);
+double ** createPMat (double**A, int maxi, int maxj, int n);
+double* offDiaglargestAbsVal (double**A, int n);
+double obtainT (double**A, int i, int j);
+double obtainC (double**A, int i, int j);
+double obtainS (double**A, int i, int j);
+
+
 
 double** createMatrix(int n, int m);
+double ** createIMatrix(int n);
 void printMatrix(double ** d, int n, int m );
+void printDiag(double ** d, int n);
 void freeMatrix(double**A, int n);
 
 
 
-double** wam(double** A, int n, int k);
+double** wam(double** A, int n, int m);
 double** ddg(double **wamMat, int n);
 double** gl(double **wamMat, double **ddgMat,int n);
+double*** jacobi(double** A,int n);
 void prepData(char *filename);
 
 
+double off(double** A, int n);
