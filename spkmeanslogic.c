@@ -38,6 +38,8 @@ double** gl(double **wamMat,double **ddgMat, int n){
 }
 
 
+
+
 double*** jacobi(double** A,int n){
     double currDelta=1;
     int iter=0;
@@ -45,11 +47,14 @@ double*** jacobi(double** A,int n){
     double ** Vtmp,**Atemp;
     double *** res;
 
-    while(iter<100 &&currDelta>0.00001){
-        double ** P, **PT;
-        int maxI,maxJ;
-        double offA,offAt;
-        double* biggestEl= offDiaglargestAbsVal(A,n);
+    double ** P, **PT;
+    int maxI,maxJ;
+    double offA,offAt;
+    double* biggestEl;
+
+    while(iter<100 && currDelta>0.00001 && !isDiagonal(A,n)){
+
+        biggestEl= offDiaglargestAbsVal(A,n);
 
         offA = off(A, n);
 
@@ -57,19 +62,22 @@ double*** jacobi(double** A,int n){
         maxJ=biggestEl[1];
         free(biggestEl);
         P=createPMat(A,maxI,maxJ,n);
-        PT=Transpose(A,n,n);
+        PT=Transpose(P,n,n);
+
         Atemp= multMatrix(PT,A,n,n,n,n);
         freeMatrix(A,n);
+        freeMatrix(PT,n);
         A= multMatrix(Atemp,P,n,n,n,n);
         freeMatrix(Atemp,n);
 
         Vtmp =multMatrix(V,P,n,n,n,n);
         freeMatrix(V,n);
+        freeMatrix(P,n);
         V=Vtmp;
         offAt = off(A, n);
         currDelta =offAt-offA;
         iter++;
-        free(biggestEl);
+        //free(biggestEl);
 
     }
     res = calloc(2, sizeof(double**));
@@ -77,4 +85,3 @@ double*** jacobi(double** A,int n){
     res[1]=V;
     return res;
 }
-
