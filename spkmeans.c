@@ -71,10 +71,11 @@ int main(int argc, char *argv[] )
     } 
     else if(strcmp(goal,"jacobi")==0){
         double ***jacobiRes;
-        assertAndReturn(rowsCount!=columnCount);
+        assertAndReturn(rowsCount==columnCount);
         jacobiRes = jacobi(data, rowsCount);
-        printDiag(jacobiRes[1], rowsCount);
-        printMatrix(jacobiRes[0], rowsCount, rowsCount);
+        printDiag(jacobiRes[0], rowsCount);
+        printf("\n");
+        printMatrix(jacobiRes[1], rowsCount, rowsCount);
 
         freeMatrix(jacobiRes[1],rowsCount);
         freeMatrix(jacobiRes[0],rowsCount);
