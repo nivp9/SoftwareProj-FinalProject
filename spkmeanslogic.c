@@ -77,7 +77,6 @@ double*** jacobi(double** A,int n){
         offAt = off(A, n);
         currDelta =offAt-offA;
         iter++;
-        //free(biggestEl);
 
     }
     res = calloc(2, sizeof(double**));

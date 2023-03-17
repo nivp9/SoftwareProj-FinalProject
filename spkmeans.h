@@ -32,3 +32,6 @@ void prepData(char *filename);
 
 
 double off(double** A, int n);
+
+
+double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount);

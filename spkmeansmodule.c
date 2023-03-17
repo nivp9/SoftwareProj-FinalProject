@@ -9,6 +9,70 @@ PyObject* GetPyList_fromRes_Jacobi(int rows, int columns, double ***data);
 PyObject* GetPyList_fromRes(int rows, int columns, double **data);
 
 
+static PyObject* spk_capi(PyObject *self, PyObject *args)
+{
+    int i,j;
+    PyObject *datalst;
+    PyObject *centroidslst;
+    int k;
+    PyObject* res;
+    double **rawres;
+    int iter;
+    double epsilon;
+    int rowcount;
+    int columncount;
+    
+    if(!PyArg_ParseTuple(args, "OOiifii", &centroidslst, &datalst, &k, &iter, &epsilon, &rowcount, &columncount)) {
+        return NULL; 
+    }
+    double **data=malloc(rowcount*sizeof(double*)) ;
+    if(data == NULL){
+        printf("An Error Has Occurred");
+        exit(1);
+    }
+    double **centroids=malloc(k*sizeof(double*)) ;
+    if(centroids == NULL){
+        printf("An Error Has Occurred");
+        exit(1);
+    }
+    for (i=0;i<rowcount;i++){
+        data[i] = malloc(columncount*sizeof(double));
+        if(data[i] == NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+        }
+        for (j=0;j<columncount;j++){
+            data[i][j]= PyFloat_AsDouble(PyList_GetItem(PyList_GetItem(datalst,i),j));
+        }
+    }
+    for (i=0;i<k;i++){
+        centroids[i] = malloc(columncount*sizeof(double));
+        if(centroids[i] == NULL){
+            printf("An Error Has Occurred");
+            exit(1);
+        }
+        for (j=0;j<columncount;j++){
+            centroids[i][j]= PyFloat_AsDouble(PyList_GetItem(PyList_GetItem(centroidslst,i),j));
+        }
+    }
+    rawres = spk(centroids,data,k,iter,epsilon,rowcount,columncount); 
+    res= GetLisy_fromPyRes(k,columncount,rawres);
+     for (i=0;i<rowcount;i++){
+        free(data[i]);
+        
+    }
+    for (i=0;i<k;i++){
+        free(rawres[i]);
+
+        free(centroids[i]);
+    }
+    free(data);
+    free(centroids);
+    free(rawres);
+    return res;
+}
+
+
 static PyObject* wam_capi(PyObject *self, PyObject *args)
 {
     PyObject *lst;
@@ -182,11 +246,15 @@ static PyMethodDef capiMethods[] = {
       PyDoc_STR("returns gl matrix as described in proj. desc")}, 
     {NULL, NULL, 0, NULL},
 
-     {"wam",                   
+     {"jacobi",                   
       (PyCFunction) jacobi_capi, 
       METH_VARARGS,         
       PyDoc_STR("returns jacobi matrix as described in proj. desc where last row is the Eigenvalues and first n rows are the matrix.")}, 
     {NULL, NULL, 0, NULL},
+    {"spk",                   
+      (PyCFunction) spk_capi, 
+      METH_VARARGS,         
+      PyDoc_STR("Kmeans algorithm from HW2")}
 };
 
 
