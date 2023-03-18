@@ -9,8 +9,7 @@ script_dir = os.path.dirname(__file__)
 
 
 np.random.seed(0)
-#path1 = "C:/Users/Erezd/OneDrive/Desktop/input_2_db_1.txt"
-#path2 = "C:/Users/Erezd/OneDrive/Desktop/input_2_db_2.txt"
+
 
 
 def readingUserArgs():
@@ -25,19 +24,28 @@ def readingUserArgs():
 
 
     if file_name.endswith('txt'):
-        data=np.genfromtxt(file_name,dtype=float,delimiter=",")
+        data = np.genfromtxt(file_name,dtype=float,delimiter=",")
     else:
         with open(file_name, 'r', encoding='utf-8-sig') as f: 
             data = np.genfromtxt(f, dtype=float, delimiter=',')
     
+    '''
+    def prepData(data):
+        res = []
+        for line in data.readlines():
+            innerlist = []
+            for val in line.split(","):
+                innerlist.append(float(val))
+            res.append(innerlist)
+        return res
+    '''
+    
     data_df=pd.DataFrame(data)
-    data_df.columns = [str(i) for i in range(data_df.shape[1])]
-    data_df = data_df.sort_values('0')
 
     rowCount = data_df.shape[0]
     columnCount = data_df.shape[1]
-
-    #------
+    
+    
     if len(sys.argv) == 4:
         if not (k).isnumeric():
             print("Invalid number of clusters!")
@@ -72,10 +80,34 @@ def readingUserArgs():
                 AT.append(inner_list)
         return AT
     
+    def printMat(mat):
+        for row in mat:
+            print(','.join('{:.4f}'.format(v) for v in row))
+
+    def printMatJacobi(mat):
+        for row in mat[:len(mat)]:   # without last row
+            print('   '.join('{:.4f}'.format(v) for v in row))
 
 
     if goal == "spk":
         print("todo")
+        matRes = km.jacobi(data_p,rowCount,columnCount-1)
+        eigenvalues = matRes[rowCount-1]
+
+        if k==1:
+            k = kFromEigengapHeuristic(eigenvalues)
+        
+        matResTrans = Transpose(matRes, rowCount+1, columnCount)
+        matResTrans_sorted = sorted(matRes , key=lambda k: k[-1])  # sort by the last element - eigenvalues
+        U_Trans = matResTrans_sorted[:k]    # first k rows
+        
+        # remove last element in U in each row
+        U = [row[:rowCount] for row in U]
+        U = Transpose(U_Trans, k, rowCount+1)     # U size = n * k
+
+        # send U to kmeans++ 
+        calcKmeans(U, rowCount, k, k)
+
 
     elif goal == "wam":
         wamRes = km.wam(data_p,rowCount,columnCount-1)
@@ -87,32 +119,19 @@ def readingUserArgs():
         glRes = km.gl(data_p,rowCount,columnCount-1)
         printMat(glRes)
 
-    
     elif goal == "jacobi":
         matRes = km.jacobi(data_p,rowCount,columnCount-1)
         eigenvalues = matRes[rowCount-1]
-        if k==1:
-            k = kFromEigengapHeuristic(eigenvalues)
-        
-        matResTrans = Transpose(matRes, rowCount+1, columnCount)
-        matResTrans_sorted = sorted(matRes , key=lambda k: k[rowCount])  # sort by the last element - eigenvalues
-        U_Trans = matResTrans_sorted[:k]
-        U = Transpose(U_Trans, k, rowCount+1)
-
-        # remove last element in U in each row
-        U = [row[:rowCount] for row in U]
-        # send U to kmeans++ 
-        #####
-        #U_df = pd.DataFrame(U)
-        calcKmeans(U, rowCount, k, k)
+        print(eigenvalues)
+        printMatJacobi(matRes)
 
     else:
         print("An Error Has Occurred")
         sys.exit()
 
-    def printMat(mat):
-        for row in mat:
-            print(','.join('{:.4f}'.format(v) for v in row))
+
+    
+    
 
 
 
@@ -126,10 +145,12 @@ def calcKmeans(U, rowCount, columnCount, k):
         return res
 
     iter = 300     # not sure
-    epsilon = 0
+    epsilon = 0    # not sure
     data_points = pd.DataFrame(U)
 
-
+    data_points.columns = [str(i) for i in range(data_points.shape[1])]
+    data_points = data_points.sort_values('0')
+    
     randomRow = np.random.choice(data_points['0'], 1)[0]
     newCentroid = np.array(data_points[data_points['0']==randomRow])
     centroids_indices = [int(newCentroid[0][0])]
@@ -164,10 +185,10 @@ def calcKmeans(U, rowCount, columnCount, k):
     data_p= [[x[i][j] for j in range(1,columnCount)]  for i in range(rowCount)]
     cent_p= [[centroids[i][j] for j in range(1,columnCount)]  for i in range(k)]
 
-    calcCentroids = km.fit(cent_p,data_p,k,iter,epsilon,rowCount,columnCount-1)  #change to spk - not fit 
+    calcCentroids = km.spk(cent_p,data_p,k,iter,epsilon,rowCount,columnCount-1)  
     print(','.join(str(v) for v in centroids_indices))
     for centroid in calcCentroids:
         print(','.join('{:.4f}'.format(v) for v in centroid))
 
 
-    
+readingUserArgs()    
