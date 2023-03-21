@@ -1,4 +1,5 @@
-
+# ifndef SPKMEANS_H_  // added
+# define SPKMEANS_H_
 
 double** multMatrix(double **A, double ** B, int An, int Am, int Bn, int Bm);
 double euclideanDist(double* a, double* b, int n);
@@ -26,9 +27,13 @@ void freeMatrix(double**A, int n);
 
 double** wam(double** A, int n, int m);
 double** ddg(double **wamMat, int n);
-double** gl(double **wamMat, double **ddgMat,int n);
+double** gl(double **wamMat, double **ddgMat ,int n);
 double*** jacobi(double** A,int n);
+
+double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount);
 void prepData(char *filename);
 
 
 double off(double** A, int n);
+
+# endif

@@ -39,14 +39,17 @@ double **data =NULL;
 
 int main(int argc, char *argv[] )
 {
-    if(argc !=3){
+    if(argc !=2){  // 3
         printf("An Error Has Occurred");
         return 0;
     }
     goal = argv[1];
-    file = argv[2];
+    //file = argv[2];
+    file = "./tests/tests/input_1.txt";
     prepData(file);
-    
+
+    printf("%d %d",rowsCount,columnCount);
+
     if(strcmp(goal,"wam")==0){
         double **wamRes = wam(data,rowsCount,columnCount);
         printMatrix(wamRes, rowsCount, rowsCount);
@@ -70,7 +73,7 @@ int main(int argc, char *argv[] )
     } 
     else if(strcmp(goal,"jacobi")==0){
         double ***jacobiRes;
-        assertAndReturn(rowsCount==columnCount);  // equal
+        assertAndReturn(rowsCount==columnCount);
         jacobiRes = jacobi(data, rowsCount);
         printDiag(jacobiRes[0], rowsCount);
         printf("\n");

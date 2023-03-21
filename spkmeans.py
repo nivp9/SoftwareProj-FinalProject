@@ -57,7 +57,7 @@ def readingUserArgs():
     
 
     x=np.array(data_df)
-    data_p= [[x[i][j] for j in range(1,columnCount)]  for i in range(rowCount)]
+    data_p= [[x[i][j] for j in range(columnCount)]  for i in range(rowCount)]
 
 
     def kFromEigengapHeuristic (eigenvalues):
@@ -88,10 +88,10 @@ def readingUserArgs():
         for row in mat[:len(mat)]:   # without last row
             print('   '.join('{:.4f}'.format(v) for v in row))
 
-
+    #print(columnCount , "\n")
+    
     if goal == "spk":
-        print("todo")
-        matRes = km.jacobi(data_p,rowCount,columnCount-1)
+        matRes = km.jacobi(data_p,rowCount)
         eigenvalues = matRes[rowCount-1]
 
         if k==1:
@@ -107,20 +107,22 @@ def readingUserArgs():
 
         # send U to kmeans++ 
         calcKmeans(U, rowCount, k, k)
-
-
+    
     elif goal == "wam":
-        wamRes = km.wam(data_p,rowCount,columnCount-1)
+        wamRes = km.wam(data_p,rowCount,columnCount)  
         printMat(wamRes)
     elif goal == "ddg":
-        ddgRes = km.ddg(data_p,rowCount,columnCount-1)
+        wamRes = km.wam(data_p,rowCount,columnCount)
+        ddgRes = km.ddg(wamRes,rowCount)
         printMat(ddgRes)
     elif goal == "gl":
-        glRes = km.gl(data_p,rowCount,columnCount-1)
+        wamRes = km.wam(data_p,rowCount,columnCount)
+        ddgRes = km.ddg(wamRes,rowCount)
+        glRes = km.gl(wamRes, ddgRes,rowCount)
         printMat(glRes)
 
     elif goal == "jacobi":
-        matRes = km.jacobi(data_p,rowCount,columnCount-1)
+        matRes = km.jacobi(data_p, rowCount)
         eigenvalues = matRes[rowCount-1]
         print(eigenvalues)
         printMatJacobi(matRes)
@@ -185,7 +187,7 @@ def calcKmeans(U, rowCount, columnCount, k):
     data_p= [[x[i][j] for j in range(1,columnCount)]  for i in range(rowCount)]
     cent_p= [[centroids[i][j] for j in range(1,columnCount)]  for i in range(k)]
 
-    calcCentroids = km.spk(cent_p,data_p,k,iter,epsilon,rowCount,columnCount-1)  
+    calcCentroids = km.spk(cent_p,data_p,k,iter,epsilon,rowCount,columnCount)  
     print(','.join(str(v) for v in centroids_indices))
     for centroid in calcCentroids:
         print(','.join('{:.4f}'.format(v) for v in centroid))
