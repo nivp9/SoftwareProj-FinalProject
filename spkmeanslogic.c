@@ -39,7 +39,6 @@ double** gl(double **wamMat,double **ddgMat, int n){
 
 
 
-
 double*** jacobi(double** A,int n){
     double currDelta=1;
     int iter=0;
@@ -77,7 +76,6 @@ double*** jacobi(double** A,int n){
         offAt = off(A, n);
         currDelta =offAt-offA;
         iter++;
-
     }
     res = calloc(2, sizeof(double**));
     res[0]=A;

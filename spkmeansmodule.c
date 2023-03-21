@@ -152,15 +152,16 @@ static PyObject* jacobi_capi(PyObject *self, PyObject *args)
     if(!PyArg_ParseTuple(args, "Oi", &lst,&n)) {
         return NULL; 
     }
-    datapoints=GetCMat_FromPy(lst,n,n);
+    datapoints = GetCMat_FromPy(lst,n,n);
     jacobires = jacobi(datapoints,n);
 
 
-    res= GetPyList_fromRes_Jacobi(n,n,jacobires);
+    res = GetPyList_fromRes_Jacobi(n,n,jacobires);    
+    //freeMatrix(datapoints,n);    // double free error !!!!!
     freeMatrix(jacobires[0], n);
     freeMatrix(jacobires[1], n);
     free(jacobires);
-    freeMatrix(datapoints,n);
+    
     return res;
 }
 

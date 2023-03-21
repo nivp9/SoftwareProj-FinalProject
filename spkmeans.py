@@ -84,8 +84,8 @@ def readingUserArgs():
         for row in mat:
             print(','.join('{:.4f}'.format(v) for v in row))
 
-    def printMatJacobi(mat):
-        for row in mat[:len(mat)]:   # without last row
+    def printMatJacobi(mat,n):
+        for row in mat[:n]:   # without last row   // ?????
             print('   '.join('{:.4f}'.format(v) for v in row))
 
     #print(columnCount , "\n")
@@ -124,8 +124,9 @@ def readingUserArgs():
     elif goal == "jacobi":
         matRes = km.jacobi(data_p, rowCount)
         eigenvalues = matRes[rowCount-1]
-        print(eigenvalues)
-        printMatJacobi(matRes)
+        
+        print(','.join(str(val) for val in eigenvalues))
+        printMatJacobi(matRes, rowCount)
 
     else:
         print("An Error Has Occurred")

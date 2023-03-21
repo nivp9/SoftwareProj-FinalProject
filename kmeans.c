@@ -33,8 +33,7 @@ void freeLinkedList(struct vector *vec);
 void freeCordsList(struct cord *cord);
 void setDataFromPython(double **iCentroid, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount);
 double calcMaxCentroidsDelta();
-double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount);
-
+double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount);  //
 
 double d(struct cord v1,struct cord v2);
 
