@@ -128,7 +128,9 @@ void prepData(char *filename){
         curr_cord->next = NULL;
 
     }
-    prev_vec->next = NULL;
+    if(prev_vec!=NULL){
+        prev_vec->next = NULL;
+    }
     free(head_cord); 
     free(curr_vec); 
     fclose(f);

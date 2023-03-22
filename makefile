@@ -12,3 +12,4 @@ Utils.o: Utils.c
 	$(CC) -c Utils.c $(Cflags)
 kmeans.o: kmeans.c
 	$(CC) -c kmeans.c $(Cflags)
+	
