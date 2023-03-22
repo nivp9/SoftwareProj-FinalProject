@@ -1,6 +1,7 @@
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
 #include "spkmeans.h"
-#include "Utils.c"
-
 
 double** wam(double** A, int n, int m){
     int i,j;

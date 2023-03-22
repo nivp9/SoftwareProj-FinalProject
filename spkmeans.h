@@ -1,6 +1,15 @@
-# ifndef SPKMEANS_H_  // added
+# ifndef SPKMEANS_H_
 # define SPKMEANS_H_
-
+struct cord
+{
+    double value;
+    struct cord *next;
+};
+struct vector
+{
+    struct vector *next;
+    struct cord *cords;
+};
 double** multMatrix(double **A, double ** B, int An, int Am, int Bn, int Bm);
 double euclideanDist(double* a, double* b, int n);
 double W(double** A,int i, int j, int n);

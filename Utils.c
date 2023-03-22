@@ -36,7 +36,7 @@ double ** multMatrix(double **A, double ** B, int An, int Am, int Bn, int Bm){
 
 double euclideanDist(double* a, double* b, int n){
     int i=0;
-    double sum =0;    // double instead of int!!!!!!!!!
+    double sum =0;
     double t = 0;
     for(i=0;i<n;i++){
         t = (a[i]-b[i]);
@@ -53,7 +53,6 @@ double W(double** A,int i, int j, int n) {
         return 0;
     }
     exponent  = -1 * euclideanDist(A[i],A[j],n)/2; 
-    //printf("%f",exp(exponent));
     return exp(exponent);
 }
 

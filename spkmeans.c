@@ -4,9 +4,6 @@
 #include <string.h>
 #include <ctype.h>
 #include "spkmeans.h"
-#include "spkmeanslogic.c"
-#include "kmeans.c"
-
 
 
 #define EPSILON 0.001
@@ -17,23 +14,10 @@
         }                                       \
 
 
-/*
-struct cord
-{
-    double value;
-    struct cord *next;
-};
-struct vector
-{
-    struct vector *next;
-    struct cord *cords;
-};
-
-
 double** convertLinkedListToArray(struct vector *v, int vectors, int cords);
 void freeLinkedList(struct vector *vec);
 void freeCordsList(struct cord *cord);
-*/
+
 char *goal, *file;
 int rowsCount=0;
 int columnCount=0;
@@ -46,11 +30,9 @@ int main(int argc, char *argv[] )
         return 0;
     }
     goal = argv[1];
-    //file = argv[2];
-    file = "./inputj.txt";
+    file = argv[2];
     prepData(file);
 
-    // printf("%d %d",rowsCount,columnCount);
 
     if(strcmp(goal,"wam")==0){
         double **wamRes = wam(data_points, rowsCount,columnCount);
@@ -88,9 +70,6 @@ int main(int argc, char *argv[] )
         freeMatrix(jacobiRes[1],rowsCount);
         freeMatrix(jacobiRes[0],rowsCount);
         free(jacobiRes);
-        // freeMatrix(data_points,rowsCount); // jacobi frees this
-
-
     }
     else {
         printf("An Error Has Occurred");

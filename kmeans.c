@@ -9,17 +9,6 @@
             exit(1);                           \
         }                                       \
 
-
-struct cord
-{
-    double value;
-    struct cord *next;
-};
-struct vector
-{
-    struct vector *next;
-    struct cord *cords;
-};
 double EPSILON=0.00001;
 
 int errorOccurred = 0;
@@ -33,7 +22,7 @@ void freeLinkedList(struct vector *vec);
 void freeCordsList(struct cord *cord);
 void setDataFromPython(double **iCentroid, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount);
 double calcMaxCentroidsDelta();
-double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount);  //
+double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount); 
 
 double d(struct cord v1,struct cord v2);
 
