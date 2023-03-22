@@ -172,10 +172,10 @@ double ** createPMat (double**A, int maxi, int maxj, int n){
     for (k = 0; k < n; k++) {
         res[k][k] = 1;
     }
-    A[maxi][maxi] = c;
-    A[maxj][maxj] = c;
-    A[maxi][maxj] = s;
-    A[maxj][maxi] = -1 * s;
+    res[maxi][maxi] = c;
+    res[maxj][maxj] = c;
+    res[maxi][maxj] = s;
+    res[maxj][maxi] = -1 * s;
 
     return res;
 }

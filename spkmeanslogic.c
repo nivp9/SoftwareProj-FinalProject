@@ -53,13 +53,15 @@ double*** jacobi(double** A,int n){
     int* biggestEl;
 
     while(iter<100 && currDelta>0.00001 && !isDiagonal(A,n)){
-        printf("%f",A[1][2]);
         biggestEl= offDiaglargestAbsVal(A,n);
 
         offA = off(A, n);
-
+        // printf("A: \n");
+        // printMatrix(A,n,n);
         maxI=biggestEl[0];
         maxJ=biggestEl[1];
+        // printf("\n  max i: %d, max j: %d          %f\n ",maxI,maxJ,A[maxI][maxJ]);
+        // printMatrix(A,n,n);
         free(biggestEl);
         P=createPMat(A,maxI,maxJ,n);
         PT=Transpose(P,n,n);
@@ -69,17 +71,18 @@ double*** jacobi(double** A,int n){
         freeMatrix(PT,n);
         A= multMatrix(Atemp,P,n,n,n,n);
         freeMatrix(Atemp,n);
-
-        Vtmp =multMatrix(V,P,n,n,n,n);
+        // printf("P: \n");
+        // printMatrix(P,n,n);
+        Vtmp =multMatrix(V,P,n,n,n,n); 
+        // printf("V: \n");
+        // printMatrix(V,n,n);
         freeMatrix(V,n);
         freeMatrix(P,n);
         V=Vtmp;
         offAt = off(A, n);
-        currDelta =offAt-offA;
+        currDelta =offA-offAt;
         iter++;
     }
-    printf("%f \n",A[1][2]);
-
     res = calloc(2, sizeof(double**));
     res[0]=A;
     res[1]=V;

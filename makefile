@@ -1,6 +1,9 @@
 CC= gcc
 Cflags= -ansi -Wall -Wextra -Werror -pedantic-errors -lm
+# Cflags= -lm
+
 # Specify the target executable and the source files needed to build it
+
 spkmeans: spkmeans.o spkmeanslogic.o Utils.o kmeans.o spkmeans.h
 	$(CC) -o spkmeans spkmeans.o spkmeanslogic.o Utils.o kmeans.o $(Cflags)
 # Specify the object files that are generated from the corresponding source files
