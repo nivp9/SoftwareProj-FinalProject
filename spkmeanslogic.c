@@ -49,7 +49,7 @@ double*** jacobi(double** A,int n){
     double ** P, **PT;
     int maxI,maxJ;
     double offA,offAt;
-    double* biggestEl;
+    int* biggestEl;
 
     while(iter<100 && currDelta>0.00001 && !isDiagonal(A,n)){
 

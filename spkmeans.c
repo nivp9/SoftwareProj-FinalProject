@@ -41,7 +41,7 @@ double **data_points =NULL;
 
 int main(int argc, char *argv[] )
 {
-    if(argc != 2){  // 3
+    if(argc != 3){ 
         printf("An Error Has Occurred");
         return 0;
     }
@@ -50,19 +50,22 @@ int main(int argc, char *argv[] )
     file = "./inputj.txt";
     prepData(file);
 
-    printf("%d %d",rowsCount,columnCount);
+    // printf("%d %d",rowsCount,columnCount);
 
     if(strcmp(goal,"wam")==0){
         double **wamRes = wam(data_points, rowsCount,columnCount);
         printMatrix(wamRes, rowsCount, rowsCount);
         freeMatrix(wamRes,rowsCount);
+        freeMatrix(data_points,rowsCount);
     }
-    else if(strcmp(goal,"ddg")==0){ 
+    else if(strcmp(goal,"ddg")==0){  
         double **wamRes = wam(data_points, rowsCount,columnCount);
         double **ddgRes = ddg(wamRes,rowsCount);
         printMatrix(ddgRes, rowsCount, rowsCount);
         freeMatrix(wamRes,rowsCount);
         freeMatrix(ddgRes,rowsCount);
+        freeMatrix(data_points,rowsCount);
+
     }
     else if(strcmp(goal,"gl")==0){
         double **wamRes = wam(data_points, rowsCount,columnCount);
@@ -72,6 +75,7 @@ int main(int argc, char *argv[] )
         freeMatrix(wamRes,rowsCount);
         freeMatrix(ddgRes,rowsCount);
         freeMatrix(glRes,rowsCount);
+        freeMatrix(data_points,rowsCount);
     } 
     else if(strcmp(goal,"jacobi")==0){
         double ***jacobiRes;
@@ -84,6 +88,8 @@ int main(int argc, char *argv[] )
         freeMatrix(jacobiRes[1],rowsCount);
         freeMatrix(jacobiRes[0],rowsCount);
         free(jacobiRes);
+        // freeMatrix(data_points,rowsCount); // jacobi frees this
+
 
     }
     else {

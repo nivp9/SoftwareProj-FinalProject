@@ -272,7 +272,7 @@ double** convertLinkedListToArray(struct vector *v, int vectors, int cords){
 
     for (i=1;i<=vectors;i++){
         struct cord *currCord= v->cords;
-        res[i-1] = malloc(cords*sizeof(double));
+        res[i-1] = calloc (sizeof(double),cords);
         assertAndReturn(res[i-1]!=NULL);
 
         for (j=1;j<=cords;j++){

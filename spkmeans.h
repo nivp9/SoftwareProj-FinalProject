@@ -10,7 +10,7 @@ double** calculateNewA (double**A, int n, int i, int j, int c, int s);
 double sumOfSquaresOffDiagonal (double**A, int n);
 int isDiagonal (double**A, int n);
 double ** createPMat (double**A, int maxi, int maxj, int n);
-double* offDiaglargestAbsVal (double**A, int n);
+int* offDiaglargestAbsVal (double**A, int n);
 double obtainT (double**A, int i, int j);
 double obtainC (double**A, int i, int j);
 double obtainS (double**A, int i, int j);

@@ -104,10 +104,10 @@ double sumOfSquaresOffDiagonal (double**A, int n){
     return sum;
 }
 
-double* offDiaglargestAbsVal (double**A, int n){
+int* offDiaglargestAbsVal (double**A, int n){
     int i, j;
     double maxVal = 0;
-    double* res = calloc(3, sizeof(int));
+    int* res = calloc(2, sizeof(int));
 
     for(i = 0; i < n; i++){
         for(j = i+1; j < n; j++) {
@@ -118,7 +118,6 @@ double* offDiaglargestAbsVal (double**A, int n){
             }
         }
     }
-    res[2] = maxVal;
     return res;
 }
 
@@ -212,6 +211,7 @@ void freeMatrix(double**A, int n) {
     }
     free(A);
 }
+
 
 void printMatrix(double ** d, int n, int m ){
     int i,j;
