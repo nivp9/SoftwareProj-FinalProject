@@ -53,7 +53,7 @@ double*** jacobi(double** A,int n){
     int* biggestEl;
 
     while(iter<100 && currDelta>0.00001 && !isDiagonal(A,n)){
-
+        printf("%f",A[1][2]);
         biggestEl= offDiaglargestAbsVal(A,n);
 
         offA = off(A, n);
@@ -78,6 +78,8 @@ double*** jacobi(double** A,int n){
         currDelta =offAt-offA;
         iter++;
     }
+    printf("%f \n",A[1][2]);
+
     res = calloc(2, sizeof(double**));
     res[0]=A;
     res[1]=V;

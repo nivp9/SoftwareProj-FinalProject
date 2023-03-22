@@ -63,9 +63,9 @@ int main(int argc, char *argv[] )
         double ***jacobiRes;
         assertAndReturn(rowsCount==columnCount);
         jacobiRes = jacobi(data_points, rowsCount);
-        printDiag(jacobiRes[0], rowsCount);
+        printDiag(jacobiRes[1], rowsCount);
         printf("\n");
-        printMatrix(jacobiRes[1], rowsCount, rowsCount);
+        printMatrix(jacobiRes[0], rowsCount, rowsCount);
 
         freeMatrix(jacobiRes[1],rowsCount);
         freeMatrix(jacobiRes[0],rowsCount);
