@@ -1,15 +1,28 @@
+# ifndef SPKMEANS_H_
+# define SPKMEANS_H_
 
+struct cord
+{
+    double value;
+    struct cord *next;
+};
+struct vector
+{
+    struct vector *next;
+    struct cord *cords;
+};
 
 double** multMatrix(double **A, double ** B, int An, int Am, int Bn, int Bm);
 double euclideanDist(double* a, double* b, int n);
 double W(double** A,int i, int j, int n);
 double** Transpose(double**A, int n, int m);
 
-double** calculateNewA (double**A, int n, int i, int j, int c, int s);
+void calculateNewA (double**A, int maxi, int maxj, int n);
 double sumOfSquaresOffDiagonal (double**A, int n);
 int isDiagonal (double**A, int n);
-double ** createPMat (double**A, int maxi, int maxj, int n);
-double* offDiaglargestAbsVal (double**A, int n);
+double ** createP (double**A, int maxi, int maxj, int n);
+
+int* offDiaglargestAbsVal (double**A, int n);
 double obtainT (double**A, int i, int j);
 double obtainC (double**A, int i, int j);
 double obtainS (double**A, int i, int j);
@@ -26,12 +39,16 @@ void freeMatrix(double**A, int n);
 
 double** wam(double** A, int n, int m);
 double** ddg(double **wamMat, int n);
-double** gl(double **wamMat, double **ddgMat,int n);
+double** gl(double **wamMat, double **ddgMat ,int n);
 double*** jacobi(double** A,int n);
+
+double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount);
 void prepData(char *filename);
 
 
 double off(double** A, int n);
 
-
-double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount);
+double** convertLinkedListToArray(struct vector *v, int vectors, int cords);
+void freeLinkedList(struct vector *vec);
+void freeCordsList(struct cord *cord);
+# endif

@@ -56,7 +56,7 @@ static PyObject* spk_capi(PyObject *self, PyObject *args)
         }
     }
     rawres = spk(centroids,data,k,iter,epsilon,rowcount,columncount); 
-    res= GetLisy_fromPyRes(k,columncount,rawres);
+    res= GetPyList_fromRes(k,columncount,rawres);   // change the name of the func 
      for (i=0;i<rowcount;i++){
         free(data[i]);
         
@@ -81,10 +81,10 @@ static PyObject* wam_capi(PyObject *self, PyObject *args)
     double **rawres;
     int rowcount,columncount;
     
-    if(!PyArg_ParseTuple(args, "Oii", &lst,&rowcount, &columncount)) {
+    if(!PyArg_ParseTuple(args, "Oii", &lst, &rowcount, &columncount)) {
         return NULL; 
     }
-    datapoints=GetCMat_FromPy(lst,rowcount,columncount);
+    datapoints = GetCMat_FromPy(lst,rowcount,columncount);
     rawres = wam(datapoints,rowcount,columncount); 
     res= GetPyList_fromRes(rowcount,rowcount,rawres);
     freeMatrix(rawres, rowcount);
@@ -94,47 +94,52 @@ static PyObject* wam_capi(PyObject *self, PyObject *args)
 static PyObject* ddg_capi(PyObject *self, PyObject *args)
 {
     PyObject *lst;
-    double ** datapoints;
+    //double ** datapoints;
     PyObject* res;
     double **rawres, **wamres;
-    int rowcount,columncount;
+    int rowcount;
     
-    if(!PyArg_ParseTuple(args, "Oii", &lst,&rowcount, &columncount)) {
+    if(!PyArg_ParseTuple(args, "Oi", &lst, &rowcount)) {
         return NULL; 
     }
-    datapoints=GetCMat_FromPy(lst,rowcount,columncount);
-    wamres = wam(datapoints,rowcount,columncount); 
+    wamres = GetCMat_FromPy(lst,rowcount,rowcount);
+    //wamres = wam(datapoints,rowcount,columncount); 
     rawres = ddg(wamres,rowcount);
     res= GetPyList_fromRes(rowcount,rowcount,rawres);
     freeMatrix(rawres, rowcount);
     freeMatrix(wamres, rowcount);
 
-    freeMatrix(datapoints,rowcount);
+    //freeMatrix(datapoints,rowcount);
     return res;
 }
+
 static PyObject* gl_capi(PyObject *self, PyObject *args)
 {
-    PyObject *lst;
-    double ** datapoints;
+    PyObject *lst1;  // add
+    PyObject *lst2;  // add
+    //double ** datapoints;
     PyObject* res;
     double **rawres, **wamres, **ddgres;
-    int rowcount,columncount;
+    int rowcount;
     
-    if(!PyArg_ParseTuple(args, "Oii", &lst,&rowcount, &columncount)) {
+    if(!PyArg_ParseTuple(args, "OOi", &lst1, &lst2, &rowcount)) {
         return NULL; 
     }
-    datapoints=GetCMat_FromPy(lst,rowcount,columncount);
-    wamres = wam(datapoints,rowcount,columncount); 
-    ddgres = ddg(wamres,rowcount);
+    wamres = GetCMat_FromPy(lst1,rowcount,rowcount);
+    ddgres = GetCMat_FromPy(lst2,rowcount,rowcount);
+    //datapoints=GetCMat_FromPy(lst,rowcount,columncount);
+    //wamres = wam(datapoints,rowcount,columncount); 
+    //ddgres = ddg(wamres,rowcount);
     rawres = gl(wamres,ddgres,rowcount);
 
     res= GetPyList_fromRes(rowcount,rowcount,rawres);
     freeMatrix(rawres, rowcount);
     freeMatrix(wamres, rowcount);
     freeMatrix(ddgres, rowcount);
-    freeMatrix(datapoints,rowcount);
+    //freeMatrix(datapoints,rowcount);
     return res;
 }
+
 static PyObject* jacobi_capi(PyObject *self, PyObject *args)
 {
     PyObject *lst;
@@ -146,15 +151,16 @@ static PyObject* jacobi_capi(PyObject *self, PyObject *args)
     if(!PyArg_ParseTuple(args, "Oi", &lst,&n)) {
         return NULL; 
     }
-    datapoints=GetCMat_FromPy(lst,n,n);
+    datapoints = GetCMat_FromPy(lst,n,n);
     jacobires = jacobi(datapoints,n);
 
 
-    res= GetPyList_fromRes_Jacobi(n,n,jacobires);
+    res = GetPyList_fromRes_Jacobi(n,n,jacobires);    
+    //freeMatrix(datapoints,n);    // double free error !!!!!
     freeMatrix(jacobires[0], n);
     freeMatrix(jacobires[1], n);
     free(jacobires);
-    freeMatrix(datapoints,n);
+    
     return res;
 }
 
@@ -187,7 +193,7 @@ PyObject* GetPyList_fromRes_Jacobi(int rows, int columns, double ***data)
     for (i = 0; i < rows; ++i)
     {
         inner_list=PyList_New(columns);
-        for(j = 0; j<columns;j++){
+        for(j = 0; j < columns;j++){
             python_double = Py_BuildValue("d", data[0][i][j]);
             PyList_SetItem(inner_list, j, python_double);
         }
@@ -227,34 +233,37 @@ PyObject* GetPyList_fromRes(int rows, int columns, double **data)
 
 
 
+
 static PyMethodDef capiMethods[] = {
     {"wam",                   
       (PyCFunction) wam_capi, 
       METH_VARARGS,         
       PyDoc_STR("returns wam matrix as described in proj. desc")}, 
-    {NULL, NULL, 0, NULL},
+  
     
-     {"ddg",                   
+    {"ddg",                   
       (PyCFunction) ddg_capi, 
       METH_VARARGS,         
-      PyDoc_STR("returns ddg matrix as described in proj. desc")}, 
-    {NULL, NULL, 0, NULL},
+      PyDoc_STR("returns ddg matrix as described in proj. desc")},
+    
 
-     {"gl",                   
+    {"gl",                   
       (PyCFunction) gl_capi, 
       METH_VARARGS,         
       PyDoc_STR("returns gl matrix as described in proj. desc")}, 
-    {NULL, NULL, 0, NULL},
+ 
 
-     {"jacobi",                   
+    {"jacobi",                   
       (PyCFunction) jacobi_capi, 
       METH_VARARGS,         
       PyDoc_STR("returns jacobi matrix as described in proj. desc where last row is the Eigenvalues and first n rows are the matrix.")}, 
-    {NULL, NULL, 0, NULL},
+  
+    
     {"spk",                   
       (PyCFunction) spk_capi, 
       METH_VARARGS,         
-      PyDoc_STR("Kmeans algorithm from HW2")}
+      PyDoc_STR("Kmeans algorithm from HW2")},
+    {NULL, NULL, 0, NULL},
 };
 
 

@@ -9,6 +9,7 @@
             exit(1);                           \
         }                                       \
 
+double EPSILON=0.00001;
 
 struct cord
 {
@@ -20,7 +21,6 @@ struct vector
     struct vector *next;
     struct cord *cords;
 };
-double EPSILON=0.00001;
 
 int errorOccurred = 0;
 void setZerosToNewCentroids();
@@ -33,6 +33,7 @@ void freeLinkedList(struct vector *vec);
 void freeCordsList(struct cord *cord);
 void setDataFromPython(double **iCentroid, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount);
 double calcMaxCentroidsDelta();
+double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount); 
 
 double d(struct cord v1,struct cord v2);
 
@@ -50,9 +51,7 @@ double maxCentroidDelta;
 
 
 
-double calcMaxCentroidsDelta();
 int isDigit(char a);
-
 void printCentroids(struct vector *pVector);
 
 void printCentroids(struct vector *pVector) {
@@ -271,7 +270,7 @@ double** convertLinkedListToArray(struct vector *v, int vectors, int cords){
 
     for (i=1;i<=vectors;i++){
         struct cord *currCord= v->cords;
-        res[i-1] = malloc(cords*sizeof(double));
+        res[i-1] = calloc (sizeof(double),cords);
         assertAndReturn(res[i-1]!=NULL);
 
         for (j=1;j<=cords;j++){
