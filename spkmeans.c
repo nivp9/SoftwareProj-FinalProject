@@ -4,9 +4,6 @@
 #include <string.h>
 #include <ctype.h>
 #include "spkmeans.h"
-#include "spkmeanslogic.c"
-#include "kmeans.c"
-
 
 
 #define EPSILON 0.001
@@ -17,23 +14,10 @@
         }                                       \
 
 
-/*
-struct cord
-{
-    double value;
-    struct cord *next;
-};
-struct vector
-{
-    struct vector *next;
-    struct cord *cords;
-};
-
-
-double** convertLinkedListToArray(struct vector *v, int vectors, int cords);
+double** convertLinkedListToArray_2(struct vector *v, int vectors, int cords);
 void freeLinkedList(struct vector *vec);
 void freeCordsList(struct cord *cord);
-*/
+
 char *goal, *file;
 int rowsCount=0;
 int columnCount=0;
@@ -41,28 +25,29 @@ double **data_points =NULL;
 
 int main(int argc, char *argv[] )
 {
-    if(argc != 2){  // 3
+    if(argc != 3){ 
         printf("An Error Has Occurred");
         return 0;
     }
     goal = argv[1];
-    //file = argv[2];
-    file = "./inputj.txt";
+    file = argv[2];
     prepData(file);
 
-    printf("%d %d",rowsCount,columnCount);
 
     if(strcmp(goal,"wam")==0){
         double **wamRes = wam(data_points, rowsCount,columnCount);
         printMatrix(wamRes, rowsCount, rowsCount);
         freeMatrix(wamRes,rowsCount);
+        freeMatrix(data_points,rowsCount);
     }
-    else if(strcmp(goal,"ddg")==0){ 
+    else if(strcmp(goal,"ddg")==0){  
         double **wamRes = wam(data_points, rowsCount,columnCount);
         double **ddgRes = ddg(wamRes,rowsCount);
         printMatrix(ddgRes, rowsCount, rowsCount);
         freeMatrix(wamRes,rowsCount);
         freeMatrix(ddgRes,rowsCount);
+        freeMatrix(data_points,rowsCount);
+
     }
     else if(strcmp(goal,"gl")==0){
         double **wamRes = wam(data_points, rowsCount,columnCount);
@@ -72,19 +57,19 @@ int main(int argc, char *argv[] )
         freeMatrix(wamRes,rowsCount);
         freeMatrix(ddgRes,rowsCount);
         freeMatrix(glRes,rowsCount);
+        freeMatrix(data_points,rowsCount);
     } 
     else if(strcmp(goal,"jacobi")==0){
         double ***jacobiRes;
         assertAndReturn(rowsCount==columnCount);
         jacobiRes = jacobi(data_points, rowsCount);
-        printDiag(jacobiRes[0], rowsCount);
+        printDiag(jacobiRes[0], rowsCount);    
         printf("\n");
         printMatrix(jacobiRes[1], rowsCount, rowsCount);
 
         freeMatrix(jacobiRes[1],rowsCount);
         freeMatrix(jacobiRes[0],rowsCount);
         free(jacobiRes);
-
     }
     else {
         printf("An Error Has Occurred");
@@ -143,18 +128,19 @@ void prepData(char *filename){
         curr_cord->next = NULL;
 
     }
-    prev_vec->next = NULL;
+    if(prev_vec!=NULL){
+        prev_vec->next = NULL;
+    }
     free(head_cord); 
     free(curr_vec); 
     fclose(f);
-    data_points = convertLinkedListToArray(head_vec, rowsCount,columnCount);
+    data_points = convertLinkedListToArray_2(head_vec, rowsCount,columnCount);
     freeLinkedList(head_vec);
 
 }
 
 
-/*
-double** convertLinkedListToArray(struct vector *v, int vectors, int cords){
+double** convertLinkedListToArray_2(struct vector *v, int vectors, int cords){
     int i,j;
     double **res=malloc(vectors*sizeof(double*)) ;
     assertAndReturn(res!=NULL);
@@ -176,6 +162,7 @@ double** convertLinkedListToArray(struct vector *v, int vectors, int cords){
     }
     return res;
 }
+/*
 void freeCordsList(struct cord *cord){
     if(cord != NULL){
         freeCordsList(cord->next);
@@ -191,6 +178,5 @@ void freeLinkedList(struct vector *vec){
 
         free(vec);
     }
-}
+}*/
 
-*/

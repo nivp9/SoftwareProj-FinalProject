@@ -4,10 +4,14 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include "spkmeans.h"
+# include "kmeans.c"
+# include "spkmeanslogic.c"
+# include "Utils.c"
+
+
 double** GetCMat_FromPy(PyObject *lst, int n, int m);
 PyObject* GetPyList_fromRes_Jacobi(int rows, int columns, double ***data);
 PyObject* GetPyList_fromRes(int rows, int columns, double **data);
-PyObject* GetLisy_fromPyRes(int rows, int columns, double **data);
 
 
 static PyObject* spk_capi(PyObject *self, PyObject *args)
@@ -57,7 +61,7 @@ static PyObject* spk_capi(PyObject *self, PyObject *args)
         }
     }
     rawres = spk(centroids,data,k,iter,epsilon,rowcount,columncount); 
-    res= GetPyList_fromRes(k,columncount,rawres);   // change the name of the func 
+    res= GetPyList_fromRes(k,columncount,rawres);   
      for (i=0;i<rowcount;i++){
         free(data[i]);
         
@@ -195,7 +199,7 @@ PyObject* GetPyList_fromRes_Jacobi(int rows, int columns, double ***data)
     {
         inner_list=PyList_New(columns);
         for(j = 0; j < columns;j++){
-            python_double = Py_BuildValue("d", data[0][i][j]);
+            python_double = Py_BuildValue("d", data[1][i][j]);
             PyList_SetItem(inner_list, j, python_double);
         }
         PyList_SetItem(python_val, i, inner_list);
@@ -203,7 +207,7 @@ PyObject* GetPyList_fromRes_Jacobi(int rows, int columns, double ***data)
     }
     inner_list=PyList_New(columns);
     for(j = 0; j<columns;j++){
-        python_double = Py_BuildValue("d", data[1][j][j]);
+        python_double = Py_BuildValue("d", data[0][j][j]);
         PyList_SetItem(inner_list, j, python_double);
     }
     PyList_SetItem(python_val, rows, inner_list);

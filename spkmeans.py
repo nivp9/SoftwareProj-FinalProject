@@ -10,7 +10,14 @@ script_dir = os.path.dirname(__file__)
 
 np.random.seed(0)
 
-
+def Transpose_mat (A, n, m):
+        AT = []
+        inner_list = []
+        for i in range(m):
+            for j in range(n):
+                inner_list.append(A[j][i])
+                AT.append(inner_list)
+        return AT
 
 def readingUserArgs():
     if len(sys.argv)!=4 and len(sys.argv)!= 3:
@@ -71,24 +78,18 @@ def readingUserArgs():
         return k
     
     
-    def Transpose (A, n, m):
-        AT = []
-        inner_list = []
-        for i in range(m):
-            for j in range(n):
-                inner_list.append(A[j][i])
-                AT.append(inner_list)
-        return AT
+    
     
     def printMat(mat):
         for row in mat:
             print(','.join('{:.4f}'.format(v) for v in row))
 
     def printMatJacobi(mat,n):
-        for row in mat[:n]:   # without last row   // ?????
-            print('   '.join('{:.4f}'.format(v) for v in row))
+        eigenvalues = mat[-1]
+        print(','.join('{:.4f}'.format(val) for val in eigenvalues))
+        for row in mat[:n]:  
+            print(','.join('{:.4f}'.format(v) for v in row))
 
-    #print(columnCount , "\n")
     
     if goal == "spk":
         matRes = km.jacobi(data_p,rowCount)
@@ -97,13 +98,13 @@ def readingUserArgs():
         if k==1:
             k = kFromEigengapHeuristic(eigenvalues)
         
-        matResTrans = Transpose(matRes, rowCount+1, columnCount)
+        matResTrans = Transpose_mat(matRes, rowCount+1, columnCount)
         matResTrans_sorted = sorted(matRes , key=lambda k: k[-1])  # sort by the last element - eigenvalues
         U_Trans = matResTrans_sorted[:k]    # first k rows
         
         # remove last element in U in each row
         U = [row[:rowCount] for row in U]
-        U = Transpose(U_Trans, k, rowCount+1)     # U size = n * k
+        U = Transpose_mat(U_Trans, k, rowCount)     # U size = n * k
 
         # send U to kmeans++ 
         calcKmeans(U, rowCount, k, k)
@@ -123,9 +124,6 @@ def readingUserArgs():
 
     elif goal == "jacobi":
         matRes = km.jacobi(data_p, rowCount)
-        eigenvalues = matRes[rowCount-1]
-        
-        print(','.join(str(val) for val in eigenvalues))
         printMatJacobi(matRes, rowCount)
 
     else:

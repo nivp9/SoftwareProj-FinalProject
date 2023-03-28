@@ -1,5 +1,8 @@
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
 #include "spkmeans.h"
-#include "Utils.c"
+
 
 
 double** wam(double** A, int n, int m){
@@ -38,7 +41,6 @@ double** gl(double **wamMat,double **ddgMat, int n){
 }
 
 
-
 double*** jacobi(double** A,int n){
     double currDelta=1;
     int iter=0;
@@ -49,32 +51,33 @@ double*** jacobi(double** A,int n){
     double ** P, **PT;
     int maxI,maxJ;
     double offA,offAt;
-    double* biggestEl;
+    int* biggestEl;
 
-    while(iter<100 && currDelta>0.00001 && !isDiagonal(A,n)){
-
+    while(iter<100 && currDelta>0.00001){
         biggestEl= offDiaglargestAbsVal(A,n);
 
         offA = off(A, n);
-
+        
         maxI=biggestEl[0];
         maxJ=biggestEl[1];
+        
         free(biggestEl);
-        P=createPMat(A,maxI,maxJ,n);
-        PT=Transpose(P,n,n);
+        P = createP(A,maxI,maxJ,n);
+        PT = Transpose(P,n,n);
 
-        Atemp= multMatrix(PT,A,n,n,n,n);
+        Atemp = multMatrix(PT,A,n,n,n,n);
         freeMatrix(A,n);
         freeMatrix(PT,n);
-        A= multMatrix(Atemp,P,n,n,n,n);
+        A = multMatrix(Atemp,P,n,n,n,n);
+        
         freeMatrix(Atemp,n);
 
-        Vtmp =multMatrix(V,P,n,n,n,n);
+        Vtmp = multMatrix(V,P,n,n,n,n); 
         freeMatrix(V,n);
         freeMatrix(P,n);
-        V=Vtmp;
+        V = Vtmp;
         offAt = off(A, n);
-        currDelta =offAt-offA;
+        currDelta = offA-offAt;
         iter++;
     }
     res = calloc(2, sizeof(double**));
@@ -82,3 +85,54 @@ double*** jacobi(double** A,int n){
     res[1]=V;
     return res;
 }
+
+
+/*
+double*** jacobi(double** A,int n){
+    
+    double currDelta = 1 ;
+    int iter = 0;
+    double ** V = createIMatrix(n);
+    double ** Vtmp;
+    double *** res;
+    double ** P;
+    int maxI,maxJ;
+    double offA,off_new_A;
+    int* biggestEl;
+
+    while(iter<100 && currDelta>0.00001 && !isDiagonal(A,n)){
+        
+        biggestEl= offDiaglargestAbsVal(A,n);
+        maxI=biggestEl[0];
+        maxJ=biggestEl[1];
+        free(biggestEl);
+        printf("\n  max i: %d, max j: %d          %f\n ",maxI,maxJ,A[maxI][maxJ]);
+        printMatrix(A,n,n);
+
+        P = createP(A,maxI,maxJ,n);
+        Vtmp = multMatrix(V,P,n,n,n,n);
+        
+        printf("P: \n");
+        printMatrix(P,n,n);
+        printf("V: \n");
+        printMatrix(V,n,n);
+
+        freeMatrix(V,n);
+        freeMatrix(P,n);
+        V=Vtmp;
+        
+        offA = off(A, n);
+        calculateNewA(A,maxI,maxJ,n);
+        printf("A: \n");
+        printMatrix(A,n,n);
+           
+        off_new_A = off(A, n);
+        currDelta = offA - off_new_A;
+        iter++;
+    }
+
+    res = calloc(2, sizeof(double**));
+    res[0]=A;
+    res[1]=V;
+    return res;
+}*/
