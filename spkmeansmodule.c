@@ -55,7 +55,7 @@ static PyObject* spk_capi(PyObject *self, PyObject *args)
             centroids[i][j]= PyFloat_AsDouble(PyList_GetItem(PyList_GetItem(centroidslst,i),j));
         }
     }
-    rawres = spk(centroids,data,k,iter,epsilon,rowcount,columncount); 
+    rawres = spk(centroids,data,k,iter,rowcount,columncount); 
     res= GetPyList_fromRes(k,columncount,rawres);   // change the name of the func 
      for (i=0;i<rowcount;i++){
         free(data[i]);
@@ -269,14 +269,14 @@ static PyMethodDef capiMethods[] = {
 
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    "mykmeanssp", 
+    "spkmeansEx", 
     NULL, 
     -1,  
     capiMethods 
 };
 
 PyMODINIT_FUNC
-PyInit_mykmeanssp(void)
+PyInit_spkmeansEx(void)
 {
     PyObject *m;
     m = PyModule_Create(&moduledef);

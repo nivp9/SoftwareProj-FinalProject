@@ -4,7 +4,7 @@ import os
 import numpy as np
 import pandas as pd
 import random
-import mykmeanssp as km
+import spkmeansEx as km
 script_dir = os.path.dirname(__file__)
 
 

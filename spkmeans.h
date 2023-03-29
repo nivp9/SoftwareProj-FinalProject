@@ -42,7 +42,7 @@ double** ddg(double **wamMat, int n);
 double** gl(double **wamMat, double **ddgMat ,int n);
 double*** jacobi(double** A,int n);
 
-double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount);
+double** spk(double **icentroids, double **idata, int ik,int iiter,int irowcount, int icolumncount);
 void prepData(char *filename);
 
 

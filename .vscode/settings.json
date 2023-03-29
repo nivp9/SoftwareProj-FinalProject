@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "spkmeans.h": "c",
+        "stdio.h": "c"
+    }
+}
