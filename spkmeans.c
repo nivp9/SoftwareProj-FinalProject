@@ -162,21 +162,3 @@ double** convertLinkedListToArray_2(struct vector *v, int vectors, int cords){
     }
     return res;
 }
-/*
-void freeCordsList(struct cord *cord){
-    if(cord != NULL){
-        freeCordsList(cord->next);
-        free(cord);
-    }
-}
-void freeLinkedList(struct vector *vec){
-    if(vec!= NULL){
-
-        freeLinkedList(vec->next);
-
-        freeCordsList (vec->cords); 
-
-        free(vec);
-    }
-}*/
-
