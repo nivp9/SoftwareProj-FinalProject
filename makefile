@@ -4,7 +4,7 @@ Cflags= -ansi -Wall -Wextra -Werror -pedantic-errors -lm
 
 # Specify the target executable and the source files needed to build it
 
-spkmeans: spkmeans.o spkmeanslogic.o Utils.o kmeans.o spkmeans.h
+spkmeans: spkmeans.o Utils.o spkmeanslogic.o kmeans.o spkmeans.h
 	$(CC) -o spkmeans spkmeans.o spkmeanslogic.o Utils.o kmeans.o $(Cflags)
 # Specify the object files that are generated from the corresponding source files
 spkmeans.o: spkmeans.c

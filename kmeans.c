@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "spkmeans.h"
 
+
 #define assertAndReturn(cond)                   \
         if (!(cond)) {                          \
             printf("An Error Has Occurred");    \
@@ -11,26 +12,17 @@
 
 double EPSILON=0.00001;
 
-struct cord
-{
-    double value;
-    struct cord *next;
-};
-struct vector
-{
-    struct vector *next;
-    struct cord *cords;
-};
 
 int errorOccurred = 0;
+
 void setZerosToNewCentroids();
 void initCentroidsLinkedList(double **icentroid);
 void initDataLinkedList(double **idata);
 void copyFirstKToNew();
 double** convertLinkedListToArray(struct vector *v, int vectors, int cords);
-
 void freeLinkedList(struct vector *vec);
 void freeCordsList(struct cord *cord);
+
 void setDataFromPython(double **iCentroid, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount);
 double calcMaxCentroidsDelta();
 double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount); 
@@ -56,7 +48,6 @@ void printCentroids(struct vector *pVector);
 
 void printCentroids(struct vector *pVector) {
     struct vector *headVector = pVector;
-
     int i =1;
     
     if(pVector==NULL){
@@ -176,6 +167,7 @@ void freeCordsList(struct cord *cord){
         free(cord);
     }
 }
+
 double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount){
   int i =0,j=0;
     double minDist;
@@ -263,6 +255,7 @@ double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsi
     freeLinkedList(data);
     return newCentrioidsAsArray; 
 }
+
 double** convertLinkedListToArray(struct vector *v, int vectors, int cords){
     int i,j;
     double **res=malloc(vectors*sizeof(double*)) ;

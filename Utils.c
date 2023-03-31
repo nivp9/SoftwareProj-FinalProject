@@ -9,7 +9,18 @@
             exit(1);                           \
         }                                       \
 
-
+double off(double** A, int n){
+    int i,j;
+    double res=0;
+    for(i=0;i<n;i++){
+        for(j=0;j<n;j++){
+            if(i!=j){
+                res += pow(A[i][j],2);
+            }
+        }
+    }
+    return res;
+}
 
 double ** multMatrix(double **A, double ** B, int An, int Am, int Bn, int Bm){
     double **res;
@@ -238,16 +249,4 @@ void printDiag(double ** d, int n){
         }
 
     }
-}
-double off(double** A, int n){
-    int i,j;
-    double res=0;
-    for(i=0;i<n;i++){
-        for(j=0;j<n;j++){
-            if(i!=j){
-                res += pow(A[i][j],2);
-            }
-        }
-    }
-    return res;
 }

@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
 #include "spkmeans.h"
 
 
@@ -15,6 +14,9 @@
         }                                       \
 
 
+double** convertLinkedListToArray_2(struct vector *v, int vectors, int cords);
+void freeLinkedList(struct vector *vec);
+void freeCordsList(struct cord *cord);
 
 char *goal, *file;
 int rowsCount=0;
@@ -132,14 +134,13 @@ void prepData(char *filename){
     free(head_cord); 
     free(curr_vec); 
     fclose(f);
-    data_points = convertLinkedListToArray(head_vec, rowsCount,columnCount);
+    data_points = convertLinkedListToArray_2(head_vec, rowsCount,columnCount);
     freeLinkedList(head_vec);
 
 }
 
 
-/*
-double** convertLinkedListToArray(struct vector *v, int vectors, int cords){
+double** convertLinkedListToArray_2(struct vector *v, int vectors, int cords){
     int i,j;
     double **res=malloc(vectors*sizeof(double*)) ;
     assertAndReturn(res!=NULL);
@@ -161,6 +162,7 @@ double** convertLinkedListToArray(struct vector *v, int vectors, int cords){
     }
     return res;
 }
+/*
 void freeCordsList(struct cord *cord){
     if(cord != NULL){
         freeCordsList(cord->next);
@@ -176,6 +178,5 @@ void freeLinkedList(struct vector *vec){
 
         free(vec);
     }
-}
+}*/
 
-*/

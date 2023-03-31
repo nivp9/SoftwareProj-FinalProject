@@ -1,6 +1,5 @@
 # ifndef SPKMEANS_H_
 # define SPKMEANS_H_
-
 struct cord
 {
     double value;
@@ -21,7 +20,6 @@ void calculateNewA (double**A, int maxi, int maxj, int n);
 double sumOfSquaresOffDiagonal (double**A, int n);
 int isDiagonal (double**A, int n);
 double ** createP (double**A, int maxi, int maxj, int n);
-
 int* offDiaglargestAbsVal (double**A, int n);
 double obtainT (double**A, int i, int j);
 double obtainC (double**A, int i, int j);
@@ -33,9 +31,9 @@ double** createMatrix(int n, int m);
 double ** createIMatrix(int n);
 void printMatrix(double ** d, int n, int m );
 void printDiag(double ** d, int n);
+
+
 void freeMatrix(double**A, int n);
-
-
 
 double** wam(double** A, int n, int m);
 double** ddg(double **wamMat, int n);
@@ -48,7 +46,4 @@ void prepData(char *filename);
 
 double off(double** A, int n);
 
-double** convertLinkedListToArray(struct vector *v, int vectors, int cords);
-void freeLinkedList(struct vector *vec);
-void freeCordsList(struct cord *cord);
 # endif
