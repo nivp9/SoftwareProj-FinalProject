@@ -12,11 +12,11 @@ np.random.seed(0)
 
 def Transpose_mat (A, n, m):
         AT = []
-        inner_list = []
-        for i in range(m):
+        for i in range(m):  
+            inner_list = []
             for j in range(n):
                 inner_list.append(A[j][i])
-                AT.append(inner_list)
+            AT.append(inner_list)
         return AT
 
 def readingUserArgs():
@@ -69,13 +69,14 @@ def readingUserArgs():
 
     def kFromEigengapHeuristic (eigenvalues):
         max_delta = 0
+        eigenvalues = sorted(eigenvalues)
         k = 1
-        for i in range(len(eigenvalues)/2):
+        for i in range(int(len(eigenvalues)/2)):
             delta_i = abs(eigenvalues[i] - eigenvalues[i+1])
             if delta_i > max_delta:
                 max_delta = delta_i
                 k = i
-        return k
+        return k+1
     
     
     
@@ -92,18 +93,21 @@ def readingUserArgs():
 
     
     if goal == "spk":
-        matRes = km.jacobi(data_p,rowCount)
-        eigenvalues = matRes[rowCount-1]
+        wamRes = km.wam(data_p,rowCount,columnCount)
+        ddgRes = km.ddg(wamRes,rowCount)
+        glRes = km.gl(wamRes, ddgRes,rowCount)
+        matRes = km.jacobi(glRes,rowCount)
+        eigenvalues = matRes[-1]
 
         if k==1:
             k = kFromEigengapHeuristic(eigenvalues)
-        
-        matResTrans = Transpose_mat(matRes, rowCount+1, columnCount)
-        matResTrans_sorted = sorted(matRes , key=lambda k: k[-1])  # sort by the last element - eigenvalues
+       
+        matResTrans = Transpose_mat(matRes, rowCount+1, rowCount)
+        matResTrans_sorted = sorted(matResTrans , key=lambda k: k[-1])  # sort by the last element - eigenvalues
         U_Trans = matResTrans_sorted[:k]    # first k rows
         
         # remove last element in U in each row
-        U = [row[:rowCount] for row in U]
+        U = [row[:rowCount] for row in U_Trans]
         U = Transpose_mat(U_Trans, k, rowCount)     # U size = n * k
 
         # send U to kmeans++ 
@@ -134,34 +138,31 @@ def readingUserArgs():
     
     
 
-
-
-
 def calcKmeans(U, rowCount, columnCount, k):
 
     def d(dataItem,centroid):
-        dataItem = dataItem[1:]
-        centroid = centroid[1:]
         res = np.sqrt(np.sum((dataItem-centroid) ** 2))
         return res
 
-    iter = 300     # not sure
-    epsilon = 0    # not sure
+    iter = 300     
+    epsilon = 0    
     data_points = pd.DataFrame(U)
 
     data_points.columns = [str(i) for i in range(data_points.shape[1])]
-    data_points = data_points.sort_values('0')
+    data_points.shape[1]
+    randomRow = np.random.choice(data_points.shape[0], 1)[0]
+    newCentroid = np.array(data_points.iloc[randomRow])
     
-    randomRow = np.random.choice(data_points['0'], 1)[0]
-    newCentroid = np.array(data_points[data_points['0']==randomRow])
-    centroids_indices = [int(newCentroid[0][0])]
-    centroids = np.copy(newCentroid)
+    centroids = np.empty((0,k), int)
+    centroids = np.append(centroids, np.array([newCentroid]), axis=0)
+    centroids_indices = [randomRow]
+    
 
     while (len(centroids) < k):
 
         prob = np.zeros(rowCount)
         for i in range(rowCount):
-            x_i = data_points.iloc[i].to_numpy()
+            x_i = data_points.iloc[i].as_matrix()
             minD = d(x_i , centroids[0])
             for centroid in centroids:
                 currD = d(x_i , centroid)
@@ -174,17 +175,16 @@ def calcKmeans(U, rowCount, columnCount, k):
             prob = prob / np.sum(prob)
 
 
-        randomRow = np.random.choice(data_points['0'], 1 , p = prob)[0]
-        newCentroid = np.array(data_points[data_points['0']==randomRow])
+        randomRow = np.random.choice(data_points.shape[0], 1 , p = prob)[0]
+        newCentroid = np.array(data_points.iloc[randomRow])
+        
+        centroids = np.append(centroids, np.array([newCentroid]), axis=0)
+        centroids_indices.append(randomRow)
 
-        centroids = np.append(centroids,newCentroid, axis=0)
-        centroids_indices.append(int(newCentroid[0][0]))
 
-
-    # print(centroids)
-    x=np.array(data_points)
-    data_p= [[x[i][j] for j in range(1,columnCount)]  for i in range(rowCount)]
-    cent_p= [[centroids[i][j] for j in range(1,columnCount)]  for i in range(k)]
+    x = np.array(data_points)
+    data_p= [[x[i][j] for j in range(columnCount)]  for i in range(rowCount)]
+    cent_p= [[centroids[i][j] for j in range(columnCount)]  for i in range(k)]
 
     calcCentroids = km.spk(cent_p,data_p,k,iter,epsilon,rowCount,columnCount)  
     print(','.join(str(v) for v in centroids_indices))
@@ -192,4 +192,4 @@ def calcKmeans(U, rowCount, columnCount, k):
         print(','.join('{:.4f}'.format(v) for v in centroid))
 
 
-readingUserArgs()    
+readingUserArgs()
