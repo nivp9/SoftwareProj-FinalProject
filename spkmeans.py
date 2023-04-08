@@ -27,7 +27,7 @@ def readingUserArgs():
         k, goal, file_name = sys.argv[1], sys.argv[2], sys.argv[3]
     else:
         goal, file_name = sys.argv[1], sys.argv[2]
-        k = 1; #defult - need uristic  
+        k = 1; 
 
 
     if file_name.endswith('txt'):
@@ -36,17 +36,7 @@ def readingUserArgs():
         with open(file_name, 'r', encoding='utf-8-sig') as f: 
             data = np.genfromtxt(f, dtype=float, delimiter=',')
     
-    '''
-    def prepData(data):
-        res = []
-        for line in data.readlines():
-            innerlist = []
-            for val in line.split(","):
-                innerlist.append(float(val))
-            res.append(innerlist)
-        return res
-    '''
-    
+
     data_df=pd.DataFrame(data)
 
     rowCount = data_df.shape[0]
@@ -103,14 +93,11 @@ def readingUserArgs():
             k = kFromEigengapHeuristic(eigenvalues)
        
         matResTrans = Transpose_mat(matRes, rowCount+1, rowCount)
-        matResTrans_sorted = sorted(matResTrans , key=lambda k: k[-1])  # sort by the last element - eigenvalues
-        U_Trans = matResTrans_sorted[:k]    # first k rows
-        
-        # remove last element in U in each row
+        matResTrans_sorted = sorted(matResTrans , key=lambda k: k[-1]) 
+        U_Trans = matResTrans_sorted[:k] 
         U = [row[:rowCount] for row in U_Trans]
-        U = Transpose_mat(U_Trans, k, rowCount)     # U size = n * k
+        U = Transpose_mat(U_Trans, k, rowCount)    
 
-        # send U to kmeans++ 
         calcKmeans(U, rowCount, k, k)
     
     elif goal == "wam":

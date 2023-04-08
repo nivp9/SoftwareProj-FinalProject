@@ -10,7 +10,7 @@
             exit(1);                           \
         }                                       \
 
-double EPSILON=0.00001;
+double EPSILON=0;
 
 
 int errorOccurred = 0;
@@ -169,14 +169,14 @@ void freeCordsList(struct cord *cord){
 }
 
 double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount){
-  int i =0,j=0;
+    int i =0,j=0;
     double minDist;
     struct vector *currPrevCentroid;
     double **newCentrioidsAsArray;
 
     setDataFromPython(icentroids, idata, ik, iiter, iepsilon, irowcount, icolumncount);
     maxCentroidDelta =EPSILON+1;
-    while(iteration_number < iter && maxCentroidDelta>=EPSILON){
+    while(iteration_number < 300 && maxCentroidDelta>=0){
         struct vector *currNewCentroid;
 
         struct vector *currVector = data;

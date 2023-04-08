@@ -99,7 +99,6 @@ static PyObject* wam_capi(PyObject *self, PyObject *args)
 static PyObject* ddg_capi(PyObject *self, PyObject *args)
 {
     PyObject *lst;
-    //double ** datapoints;
     PyObject* res;
     double **rawres, **wamres;
     int rowcount;
@@ -108,21 +107,17 @@ static PyObject* ddg_capi(PyObject *self, PyObject *args)
         return NULL; 
     }
     wamres = GetCMat_FromPy(lst,rowcount,rowcount);
-    //wamres = wam(datapoints,rowcount,columncount); 
     rawres = ddg(wamres,rowcount);
     res= GetPyList_fromRes(rowcount,rowcount,rawres);
     freeMatrix(rawres, rowcount);
     freeMatrix(wamres, rowcount);
-
-    //freeMatrix(datapoints,rowcount);
     return res;
 }
 
 static PyObject* gl_capi(PyObject *self, PyObject *args)
 {
-    PyObject *lst1;  // add
-    PyObject *lst2;  // add
-    //double ** datapoints;
+    PyObject *lst1; 
+    PyObject *lst2; 
     PyObject* res;
     double **rawres, **wamres, **ddgres;
     int rowcount;
@@ -132,16 +127,12 @@ static PyObject* gl_capi(PyObject *self, PyObject *args)
     }
     wamres = GetCMat_FromPy(lst1,rowcount,rowcount);
     ddgres = GetCMat_FromPy(lst2,rowcount,rowcount);
-    //datapoints=GetCMat_FromPy(lst,rowcount,columncount);
-    //wamres = wam(datapoints,rowcount,columncount); 
-    //ddgres = ddg(wamres,rowcount);
     rawres = gl(wamres,ddgres,rowcount);
 
     res= GetPyList_fromRes(rowcount,rowcount,rawres);
     freeMatrix(rawres, rowcount);
     freeMatrix(wamres, rowcount);
     freeMatrix(ddgres, rowcount);
-    //freeMatrix(datapoints,rowcount);
     return res;
 }
 
@@ -160,8 +151,7 @@ static PyObject* jacobi_capi(PyObject *self, PyObject *args)
     jacobires = jacobi(datapoints,n);
 
 
-    res = GetPyList_fromRes_Jacobi(n,n,jacobires);    
-    //freeMatrix(datapoints,n);    // double free error !!!!!
+    res = GetPyList_fromRes_Jacobi(n,n,jacobires);
     freeMatrix(jacobires[0], n);
     freeMatrix(jacobires[1], n);
     free(jacobires);
