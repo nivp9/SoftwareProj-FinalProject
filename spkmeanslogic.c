@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "spkmeans.h"
+#include <string.h>
 
 
 
@@ -42,6 +43,8 @@ double** gl(double **wamMat,double **ddgMat, int n){
 
 
 double*** jacobi(double** A,int n){
+    int i,j;
+    char * helperStr = calloc(7, sizeof(char));
     double currDelta=1;
     int iter=0;
     double** V = createIMatrix(n);
@@ -80,6 +83,19 @@ double*** jacobi(double** A,int n){
         currDelta = offA-offAt;
         iter++;
     }
+    for(i=0;i<n;i++){
+        sprintf(helperStr, "%.4f", A[i][i]);
+        if(strcmp(helperStr,"-0.0000")==0)
+        {
+            A[i][i] = 0;
+            for(j=0;j<n;j++) 
+            {
+                V[j][i] = -1*V[j][i];
+            }
+        }
+        
+    }
+    free(helperStr);
     res = calloc(2, sizeof(double**));
     res[0]=A;
     res[1]=V;
