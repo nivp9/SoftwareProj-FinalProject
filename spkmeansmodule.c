@@ -4,7 +4,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include "spkmeans.h"
-# include "kmeans.c"
+# include "hw2kmeans.c"
 # include "spkmeanslogic.c"
 # include "Utils.c"
 
