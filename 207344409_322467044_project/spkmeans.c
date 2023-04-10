@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include "spkmeans.h"
 
 
@@ -10,172 +12,161 @@
             exit(1);                           \
         }                                       \
 
-double EPSILON=0;
 
-
-int errorOccurred = 0;
-
-void setZerosToNewCentroids();
-void initCentroidsLinkedList(double **icentroid);
-void initDataLinkedList(double **idata);
-void copyFirstKToNew();
-double** convertLinkedListToArray(struct vector *v, int vectors, int cords);
 void freeLinkedList(struct vector *vec);
 void freeCordsList(struct cord *cord);
-
-void setDataFromPython(double **iCentroid, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount);
-double calcMaxCentroidsDelta();
-double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount); 
-
 double d(struct cord v1,struct cord v2);
-
+int errorOccurred = 0;
 struct vector *data =NULL;
 struct vector *newCentroids;
 struct vector *prevCentroids;
 
 
-int iteration_number;
 int k;
-int iter;
-int rowsCount;
-int columnCount;
-double maxCentroidDelta;
 
 
 
-int isDigit(char a);
-void printCentroids(struct vector *pVector);
 
-void printCentroids(struct vector *pVector) {
-    struct vector *headVector = pVector;
-    int i =1;
-    
-    if(pVector==NULL){
-        errorOccurred = 1;
-        return;
+
+
+char *goal, *file;
+int rowsCount=0;
+int columnCount=0;
+double **data_points =NULL;
+
+int main(int argc, char *argv[] )
+{
+    if(argc != 3){ 
+        printf("An Error Has Occurred");
+        return 0;
     }
-    for(; i<=k; i++){
-        struct cord *cords = headVector->cords;
-        int j=1;
-        for(;j<=columnCount; j++){
-            printf("%0.4f",cords->value);
-            if(j!=columnCount){
-                printf(",");
-                cords=cords->next;
-            }
-        }
+    goal = argv[1];
+    file = argv[2];
+    prepData(file);
+
+
+    if(strcmp(goal,"wam")==0){
+        double **wamRes = wam(data_points, rowsCount,columnCount);
+        printMatrix(wamRes, rowsCount, rowsCount);
+        freeMatrix(wamRes,rowsCount);
+        freeMatrix(data_points,rowsCount);
+    }
+    else if(strcmp(goal,"ddg")==0){  
+        double **wamRes = wam(data_points, rowsCount,columnCount);
+        double **ddgRes = ddg(wamRes,rowsCount);
+        printMatrix(ddgRes, rowsCount, rowsCount);
+        freeMatrix(wamRes,rowsCount);
+        freeMatrix(ddgRes,rowsCount);
+        freeMatrix(data_points,rowsCount);
+
+    }
+    else if(strcmp(goal,"gl")==0){
+        double **wamRes = wam(data_points, rowsCount,columnCount);
+        double **ddgRes = ddg(wamRes,rowsCount);
+        double **glRes = gl(wamRes,ddgRes,rowsCount);
+        printMatrix(glRes, rowsCount, rowsCount);
+        freeMatrix(wamRes,rowsCount);
+        freeMatrix(ddgRes,rowsCount);
+        freeMatrix(glRes,rowsCount);
+        freeMatrix(data_points,rowsCount);
+    } 
+    else if(strcmp(goal,"jacobi")==0){
+        double ***jacobiRes;
+        assertAndReturn(rowsCount==columnCount);
+        jacobiRes = jacobi(data_points, rowsCount);
+        printDiag(jacobiRes[0], rowsCount);    
         printf("\n");
-        headVector=headVector->next;
+        printMatrix(jacobiRes[1], rowsCount, rowsCount);
+
+        freeMatrix(jacobiRes[1],rowsCount);
+        freeMatrix(jacobiRes[0],rowsCount);
+        free(jacobiRes);
     }
+    else {
+        printf("An Error Has Occurred");
+        return 0;
+    }
+    return 1;
 }
 
-double calcMaxCentroidsDelta() {
 
-    struct vector *currNewCentroid = newCentroids;
-    struct vector *currPrevCentroid = prevCentroids;
-    int i =1;
+void prepData(char *filename){
 
-    maxCentroidDelta = d(*currNewCentroid->cords,*currPrevCentroid->cords);
-    if(!(maxCentroidDelta>=0)){
-        errorOccurred = 1;
-        return -1;
-    }
-
-    for(;i<k;i++){
-        double dis;
-        currNewCentroid = currNewCentroid->next;
-        currPrevCentroid = currPrevCentroid->next;
-        dis =  d(*currNewCentroid->cords,*currPrevCentroid->cords);
-        if(!(dis>=0)){
-            errorOccurred = 1;
-            return -1;
-        }
-
-        if(dis > maxCentroidDelta)
-            maxCentroidDelta = dis;
-    }
-    return maxCentroidDelta;
-
-}
-
-void setZerosToNewCentroids(){
-    struct vector *head_vec, *curr_vec;
+    double n;
+    char c;
+    int columnsCountInitialized=0;
+    int firstrun=1;
+    struct vector *head_vec, *curr_vec,*prev_vec = malloc(sizeof(struct vector));
     struct cord *head_cord, *curr_cord;
-    int i=1;
+    FILE *f = fopen(filename, "r");
+    assertAndReturn(f!=NULL);
 
-    head_vec= malloc(sizeof (struct vector));
-    assertAndReturn(head_vec!=NULL);
+    head_cord = malloc(sizeof(struct cord));
+    curr_cord = head_cord;
+    curr_cord->next = NULL;
 
+    head_vec = malloc(sizeof(struct vector));
     curr_vec = head_vec;
-    for(;i<=k;i++) {
-        int j=1;
+    curr_vec->next = NULL;
 
-        head_cord = malloc(sizeof (struct cord));
-        assertAndReturn(head_cord!=NULL);
 
-        curr_cord = head_cord;
-        curr_vec->cords=head_cord;
-        for (;j<=columnCount; j++) {
-            curr_cord->value=0;
-            if(j != columnCount){
-                curr_cord->next = malloc(sizeof(struct cord));
-                assertAndReturn(curr_cord->next!=NULL);
+    while (fscanf(f,"%lf%c", &n, &c) == 2)
+    {
+        if(!columnsCountInitialized){
+            columnCount++;
+        }
 
-                curr_cord = curr_cord->next;
+        if (c == '\n' || c=='\r')
+        {
+            columnsCountInitialized=1;
+            curr_cord->value = n;
+            curr_vec->cords = head_cord;
+            curr_vec->next = malloc(sizeof(struct vector));
+            if(firstrun==1){
+                free(prev_vec);
+                firstrun=0;
             }
-            curr_cord->next=NULL;
+            prev_vec=curr_vec;
+            curr_vec = curr_vec->next;
+            curr_vec->next = NULL;
+            head_cord = malloc(sizeof(struct cord));
+            curr_cord = head_cord;
+            curr_cord->next = NULL;
+            rowsCount++;
+            continue;
         }
-        if(i!= k){
-            curr_vec->next= malloc(sizeof (struct vector));
-            assertAndReturn(curr_vec->next!=NULL);
 
-             if(!(curr_vec!=NULL)){
-                errorOccurred = 1;
-                return;
-            }
-            curr_vec=curr_vec->next;
-        }
-        curr_vec->next = NULL;
-    }
-    newCentroids = head_vec;
-}
-double d(struct cord v1,struct cord v2){
-    double sum = 0;
-    int i =1;
-    for(;i<=columnCount; i++){
-        sum += pow(v1.value-v2.value,2);
-        if(i!=columnCount) {
-            v1 = *v1.next;
-            v2 = *v2.next;
-        }
-    }
-    return sqrt(sum);
-}
-void freeLinkedList(struct vector *vec){
-    if(vec!= NULL){
+        curr_cord->value = n;
+        curr_cord->next = malloc(sizeof(struct cord));
+        curr_cord = curr_cord->next;
+        curr_cord->next = NULL;
 
-        freeLinkedList(vec->next);
-
-        freeCordsList (vec->cords); 
-
-        free(vec);
     }
-}
-void freeCordsList(struct cord *cord){
-    if(cord != NULL){
-        freeCordsList(cord->next);
-        free(cord);
+    if(prev_vec!=NULL){
+        prev_vec->next = NULL;
     }
+    free(head_cord); 
+    free(curr_vec); 
+    fclose(f);
+    data_points = convertLinkedListToArray(head_vec, rowsCount,columnCount);
+    freeLinkedList(head_vec);
+
 }
 
-double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount){
+
+
+
+
+
+double** spk(double **icentroids, double **idata, int ik,int irowcount, int icolumncount){
     int i =0,j=0;
     double minDist;
     struct vector *currPrevCentroid;
     double **newCentrioidsAsArray;
-
-    setDataFromPython(icentroids, idata, ik, iiter, iepsilon, irowcount, icolumncount);
-    maxCentroidDelta =EPSILON+1;
+    double maxCentroidDelta;
+    int iteration_number=0;
+    setDataFromPython(icentroids, idata, ik, irowcount, icolumncount);
+    maxCentroidDelta = 1;
     while(iteration_number < 300 && maxCentroidDelta>=0){
         struct vector *currNewCentroid;
 
@@ -256,6 +247,7 @@ double** spk(double **icentroids, double **idata, int ik,int iiter, double iepsi
     return newCentrioidsAsArray; 
 }
 
+
 double** convertLinkedListToArray(struct vector *v, int vectors, int cords){
     int i,j;
     double **res=malloc(vectors*sizeof(double*)) ;
@@ -279,12 +271,10 @@ double** convertLinkedListToArray(struct vector *v, int vectors, int cords){
     }
     return res;
 }
-void setDataFromPython(double **icentroid, double **idata, int ik,int iiter, double iepsilon,int irowcount, int icolumncount){
-    iter=iiter;
+void setDataFromPython(double **icentroid, double **idata, int ik ,int irowcount, int icolumncount){
     k=ik;
     rowsCount=irowcount;
     columnCount=icolumncount;
-    EPSILON=iepsilon;
     initDataLinkedList(idata);
     initCentroidsLinkedList(icentroid);
 
@@ -447,4 +437,104 @@ void copyFirstKToNew() {
     }
     newCentroids = head_vec;
 
+}
+
+double calcMaxCentroidsDelta() {
+
+    struct vector *currNewCentroid = newCentroids;
+    struct vector *currPrevCentroid = prevCentroids;
+    double maxCentroidDelta;
+    int i =1;
+
+    maxCentroidDelta = d(*currNewCentroid->cords,*currPrevCentroid->cords);
+    if(!(maxCentroidDelta>=0)){
+        errorOccurred = 1;
+        return -1;
+    }
+
+    for(;i<k;i++){
+        double dis;
+        currNewCentroid = currNewCentroid->next;
+        currPrevCentroid = currPrevCentroid->next;
+        dis =  d(*currNewCentroid->cords,*currPrevCentroid->cords);
+        if(!(dis>=0)){
+            errorOccurred = 1;
+            return -1;
+        }
+
+        if(dis > maxCentroidDelta)
+            maxCentroidDelta = dis;
+    }
+    return maxCentroidDelta;
+
+}
+
+void setZerosToNewCentroids(){
+    struct vector *head_vec, *curr_vec;
+    struct cord *head_cord, *curr_cord;
+    int i=1;
+
+    head_vec= malloc(sizeof (struct vector));
+    assertAndReturn(head_vec!=NULL);
+
+    curr_vec = head_vec;
+    for(;i<=k;i++) {
+        int j=1;
+
+        head_cord = malloc(sizeof (struct cord));
+        assertAndReturn(head_cord!=NULL);
+
+        curr_cord = head_cord;
+        curr_vec->cords=head_cord;
+        for (;j<=columnCount; j++) {
+            curr_cord->value=0;
+            if(j != columnCount){
+                curr_cord->next = malloc(sizeof(struct cord));
+                assertAndReturn(curr_cord->next!=NULL);
+
+                curr_cord = curr_cord->next;
+            }
+            curr_cord->next=NULL;
+        }
+        if(i!= k){
+            curr_vec->next= malloc(sizeof (struct vector));
+            assertAndReturn(curr_vec->next!=NULL);
+
+             if(!(curr_vec!=NULL)){
+                errorOccurred = 1;
+                return;
+            }
+            curr_vec=curr_vec->next;
+        }
+        curr_vec->next = NULL;
+    }
+    newCentroids = head_vec;
+}
+double d(struct cord v1,struct cord v2){
+    double sum = 0;
+    int i =1;
+    for(;i<=columnCount; i++){
+        sum += pow(v1.value-v2.value,2);
+        if(i!=columnCount) {
+            v1 = *v1.next;
+            v2 = *v2.next;
+        }
+    }
+    return sqrt(sum);
+}
+void freeLinkedList(struct vector *vec){
+    if(vec!= NULL){
+
+        freeLinkedList(vec->next);
+
+        freeCordsList (vec->cords); 
+
+        free(vec);
+    }
+}
+void freeCordsList(struct cord *cord){
+    if(cord != NULL){
+        freeCordsList(cord->next);
+        free(cord);
+    }
 }
